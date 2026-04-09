@@ -1,0 +1,6 @@
+backend/.venv
+dashboard_app/node_modules
+dashboard_app/dist
+mobile/node_modules
+mobile/.expo
+*.log

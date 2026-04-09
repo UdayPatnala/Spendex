@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vendors &amp; Sectors | Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#454652",
+                      "outline-variant": "#c5c5d4",
+                      "on-tertiary-fixed-variant": "#5c4300",
+                      "primary": "#24389c",
+                      "on-secondary": "#ffffff",
+                      "on-background": "#1a1b22",
+                      "on-error": "#ffffff",
+                      "secondary": "#006d43",
+                      "inverse-surface": "#2f3037",
+                      "on-primary-fixed-variant": "#293ca0",
+                      "on-primary-container": "#cacfff",
+                      "tertiary-fixed-dim": "#fbbc00",
+                      "tertiary-fixed": "#ffdfa0",
+                      "secondary-container": "#75f8b3",
+                      "surface-tint": "#4355b9",
+                      "error-container": "#ffdad6",
+                      "surface-container": "#efedf6",
+                      "secondary-fixed": "#78fbb6",
+                      "background": "#fbf8ff",
+                      "inverse-primary": "#bac3ff",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#dbd9e2",
+                      "secondary-fixed-dim": "#59de9b",
+                      "surface": "#fbf8ff",
+                      "tertiary-container": "#745500",
+                      "surface-variant": "#e3e1ea",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed": "#00105c",
+                      "primary-fixed": "#dee0ff",
+                      "on-surface": "#1a1b22",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "primary-fixed-dim": "#bac3ff",
+                      "surface-container-high": "#e9e7f0",
+                      "on-secondary-fixed-variant": "#005232",
+                      "inverse-on-surface": "#f2eff9",
+                      "primary-container": "#3f51b5",
+                      "on-tertiary-fixed": "#261a00",
+                      "surface-bright": "#fbf8ff",
+                      "on-tertiary-container": "#ffca54",
+                      "on-secondary-container": "#007147",
+                      "error": "#ba1a1a",
+                      "tertiary": "#573f00",
+                      "on-secondary-fixed": "#002111",
+                      "outline": "#757684",
+                      "surface-container-low": "#f4f2fc",
+                      "surface-container-highest": "#e3e1ea"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Manrope"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-primary-gradient {
+            background: linear-gradient(135deg, #24389c 0%, #3f51b5 100%);
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+      </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-950 flex flex-col h-full p-6 z-50">
+<div class="mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-gradient rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<h1 class="text-2xl font-extrabold text-indigo-900 dark:text-indigo-100 tracking-tighter">Ledger</h1>
+<p class="text-[10px] text-slate-500 font-medium uppercase tracking-widest">Secure Digital Sanctuary</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Home -->
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200 font-manrope text-sm font-medium tracking-tight rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Home</span>
+</a>
+<!-- Payments -->
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200 font-manrope text-sm font-medium tracking-tight rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Payments</span>
+</a>
+<!-- Analytics -->
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200 font-manrope text-sm font-medium tracking-tight rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Analytics</span>
+</a>
+<!-- Budget (Active State for Vendors & Sectors context) -->
+<a class="flex items-center gap-3 px-4 py-3 text-indigo-700 dark:text-indigo-300 font-bold border-r-4 border-indigo-700 dark:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 font-manrope text-sm tracking-tight transition-all duration-200 rounded-l-xl" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span>Budget</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200 font-manrope text-sm font-medium tracking-tight rounded-xl group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full py-4 bg-primary-gradient text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                Send Payment
+            </button>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 flex justify-between items-center px-8 w-full">
+<div class="flex items-center bg-surface-container-low px-4 py-2 rounded-lg w-96 group focus-within:bg-surface-container-lowest transition-all">
+<span class="material-symbols-outlined text-outline mr-3" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-body" placeholder="Search vendors or sectors..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:text-indigo-600 transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-500 hover:text-indigo-600 transition-all">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+</button>
+<button class="text-slate-500 hover:text-indigo-600 transition-all">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="h-8 w-px bg-slate-200"></div>
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Professional woman in business casual attire with soft office lighting background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1_Ts9Rdk3TPHru_rX7ovHYncXWEoTwTX7vHe4T3I5qoh9Xs-FlgVOZWyWidTdF920dP93wL1tCdtLOcWlNfVtoVpmuK-P746bOp3oH5cSUDDBTNYyLDzMu2ECQP3j5rPJEiOnf1T5S8bZ96n0OvHhkr5ze_CnbSLdw9W0Wz_8FtM_7T9Wt76IEUMUjLrtbe1Q_4OE40xs4Ah07FA6OFk1AOBe2__jnNqWxmIbVVzOB-2BKrq4aqmz0fQTmqRMWtYUibHP9hgfLDU"/>
+<span class="text-sm font-semibold text-on-surface">Alex Rivera</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-10 min-h-[calc(100vh-4rem)]">
+<!-- Header Section -->
+<div class="flex items-end justify-between mb-12">
+<div>
+<span class="text-[10px] text-primary font-extrabold uppercase tracking-[0.2em] block mb-2">Management Portal</span>
+<h2 class="text-5xl font-extrabold text-on-surface tracking-tight">Vendors</h2>
+</div>
+<button class="px-8 py-3 bg-primary-gradient text-white rounded-xl font-bold shadow-xl shadow-primary/30 flex items-center gap-3 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                Add New Vendor
+            </button>
+</div>
+<!-- Bento Grid Layout for Vendors -->
+<div class="space-y-16">
+<!-- Category: Food & Dining -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-px bg-outline-variant"></div>
+<h3 class="text-xs font-black uppercase tracking-widest text-outline">Food &amp; Dining</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Vendor Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-surface-tint/20 transition-all group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-secondary-container/30 rounded-lg flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+</div>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold rounded-full uppercase tracking-tighter">Growth Asset</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Blue Bottle Coffee</h4>
+<p class="text-on-surface-variant text-sm mb-6">Premium artisanal café vendor</p>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mb-1">Default Amount</p>
+<p class="font-headline font-extrabold text-lg text-primary">$18.50</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-outline hover:text-primary hover:shadow-sm transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-surface-tint/20 transition-all">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-secondary-container/30 rounded-lg flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+</div>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold rounded-full uppercase tracking-tighter">Essentials</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Whole Foods Market</h4>
+<p class="text-on-surface-variant text-sm mb-6">Organic grocery sector</p>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mb-1">Default Amount</p>
+<p class="font-headline font-extrabold text-lg text-primary">$120.00</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-surface-tint/20 transition-all">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-secondary-container/30 rounded-lg flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="fastfood">fastfood</span>
+</div>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold rounded-full uppercase tracking-tighter">Sundry</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Sweetgreen</h4>
+<p class="text-on-surface-variant text-sm mb-6">Health-focused fast casual</p>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mb-1">Default Amount</p>
+<p class="font-headline font-extrabold text-lg text-primary">$15.75</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: Transport -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-px bg-outline-variant"></div>
+<h3 class="text-xs font-black uppercase tracking-widest text-outline">Transport</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl transition-all relative overflow-hidden group">
+<!-- Background Accents -->
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-colors"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-tertiary-fixed/30 rounded-lg flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="directions_car">directions_car</span>
+</div>
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold rounded-full uppercase tracking-tighter">Mobility</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Uber</h4>
+<p class="text-on-surface-variant text-sm mb-6">Rideshare and logistics</p>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mb-1">Default Amount</p>
+<p class="font-headline font-extrabold text-lg text-primary">$35.00</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl transition-all relative overflow-hidden group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-tertiary-fixed/30 rounded-lg flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="ev_station">ev_station</span>
+</div>
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold rounded-full uppercase tracking-tighter">Energy</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Tesla Supercharger</h4>
+<p class="text-on-surface-variant text-sm mb-6">Electric vehicle infrastructure</p>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mb-1">Default Amount</p>
+<p class="font-headline font-extrabold text-lg text-primary">$22.40</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: Utilities -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-px bg-outline-variant"></div>
+<h3 class="text-xs font-black uppercase tracking-widest text-outline">Utilities</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-surface-container-low p-8 rounded-2xl flex flex-col md:flex-row items-center gap-10">
+<div class="w-full md:w-1/3 text-center md:text-left">
+<div class="w-16 h-16 bg-primary-container/20 rounded-2xl flex items-center justify-center text-primary mb-4 mx-auto md:mx-0">
+<span class="material-symbols-outlined text-3xl" data-icon="bolt">bolt</span>
+</div>
+<h4 class="text-2xl font-bold mb-2">Pacific Gas &amp; Electric</h4>
+<p class="text-on-surface-variant text-sm">Main energy sector provider for residential infrastructure.</p>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-4 w-full">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10">
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mb-1">Avg. Monthly</p>
+<p class="font-headline font-extrabold text-2xl text-on-surface">$214.15</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 flex items-center justify-center">
+<button class="text-primary font-bold text-sm flex items-center gap-2 hover:underline">
+<span class="material-symbols-outlined" data-icon="settings_suggest">settings_suggest</span>
+                                    Configure Auto-Pay
+                                </button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-surface-tint/20 transition-all">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-primary-container/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="wifi">wifi</span>
+</div>
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed text-[10px] font-bold rounded-full uppercase tracking-tighter">Fixed</span>
+</div>
+<h4 class="text-xl font-bold mb-1">Comcast Xfinity</h4>
+<p class="text-on-surface-variant text-sm mb-6">High-speed telecommunications</p>
+<div class="bg-surface-container-low p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase tracking-widest mb-1">Default Amount</p>
+<p class="font-headline font-extrabold text-lg text-primary">$89.99</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-outline hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer / Macro-spacing Demo -->
+<div class="mt-32 mb-10 text-center">
+<p class="text-outline text-xs font-medium tracking-[0.3em] uppercase">The Architectural Ledger © 2024</p>
+</div>
+</main>
+</body></html>
