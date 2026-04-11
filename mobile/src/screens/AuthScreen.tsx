@@ -18,8 +18,8 @@ export function AuthScreen() {
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<AuthMode>("login");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("alex@ledger.dev");
-  const [password, setPassword] = useState("ledger123");
+  const [email, setEmail] = useState("alex@spedex.app");
+  const [password, setPassword] = useState("spedex123");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -42,15 +42,15 @@ export function AuthScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.content}>
-        <Text style={styles.brand}>Ledger</Text>
-        <Text style={styles.eyebrow}>Secure Digital Sanctuary</Text>
+        <Text style={styles.brand}>Spedex</Text>
+        <Text style={styles.eyebrow}>Speed + Spending Index</Text>
         <Text style={styles.title}>
-          {mode === "login" ? "Welcome back" : "Create your sanctuary"}
+          {mode === "login" ? "Welcome back" : "Create your Spedex account"}
         </Text>
         <Text style={styles.subtitle}>
           {mode === "login"
             ? "Sign in to view your live spending, payees, reminders, and analytics."
-            : "Set up a new account and we’ll provision a starter finance workspace for you."}
+            : "Set up a new account and we will provision a starter finance workspace for you."}
         </Text>
 
         <View style={styles.switchRow}>
@@ -106,13 +106,13 @@ export function AuthScreen() {
             <ActivityIndicator color={colors.surfaceLowest} />
           ) : (
             <Text style={styles.submitLabel}>
-              {mode === "login" ? "Enter Ledger" : "Create Account"}
+              {mode === "login" ? "Enter Spedex" : "Create Account"}
             </Text>
           )}
         </Pressable>
 
         <Text style={styles.helper}>
-          Demo login is prefilled with `alex@ledger.dev` / `ledger123`.
+          Demo login is prefilled with `alex@spedex.app` / `spedex123`.
         </Text>
       </View>
     </SafeAreaView>

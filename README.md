@@ -1,11 +1,13 @@
-# Ledger
+# Spedex
 
-Ledger is a fintech starter built from the exported design pack in this workspace. It includes:
+Spedex is a fintech workspace for tracking how fast money moves and where it goes. The name blends "speed index" and "spending index" into one product for payments, budgets, and live spending insight.
+
+## Project Structure
 
 - `backend/`: FastAPI API with SQLite-by-default and PostgreSQL-ready configuration
-- `mobile/`: Expo React Native app that matches the mobile Ledger screens
-- `dashboard_app/`: React dashboard that mirrors the desktop design exports
-- design asset folders such as `payment_handoff/`, `dashboard/`, and `desktop_dashboard/` for reference
+- `mobile/`: Expo React Native app for the mobile Spedex experience
+- `dashboard_app/`: React dashboard for desktop spending operations
+- `api/`: Vercel entrypoint that routes web traffic to the backend service
 
 ## Quick Start
 
@@ -19,12 +21,12 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-The API defaults to SQLite at `backend/ledger.db`. Set `DATABASE_URL` to a PostgreSQL connection string to switch databases.
+The API defaults to SQLite at `backend/spedex.db`. Set `DATABASE_URL` to a PostgreSQL connection string to switch databases.
 
 Demo credentials:
 
-- Email: `alex@ledger.dev`
-- Password: `ledger123`
+- Email: `alex@spedex.app`
+- Password: `spedex123`
 
 ### 2. Mobile
 
@@ -56,6 +58,6 @@ npm run dev
 - `POST /api/payments/prepare`
 - `POST /api/payments/{transaction_id}/complete`
 
-## Design Notes
+## Branding Notes
 
-The implementation follows the Ledger design brief in [`indigo_ledger/DESIGN.md`](/D:/PROJECT/Spendex/indigo_ledger/DESIGN.md), especially the indigo-led tonal surfaces, Manrope headline typography, and the "no-line" sectioning rule.
+Spedex keeps the indigo-first visual language while shifting the brand voice to "speed index" and "spending index" across the backend, dashboard, and mobile app.

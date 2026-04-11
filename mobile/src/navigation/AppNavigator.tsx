@@ -105,7 +105,7 @@ export function AppNavigator() {
     return (
       <SafeAreaView style={styles.loadingScreen}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Restoring your Ledger session…</Text>
+        <Text style={styles.loadingText}>Restoring your Spedex session...</Text>
       </SafeAreaView>
     );
   }

@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { ledgerApi } from "../api/client";
+import { spedexApi } from "../api/client";
 import { mockHomeOverview } from "../api/mockData";
 import { formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
@@ -34,7 +34,7 @@ export function PaymentConfirmScreen({ navigation, route }: any) {
   const handlePayment = async () => {
     try {
       setSubmitting(true);
-      const prepared = await ledgerApi.preparePayment({
+      const prepared = await spedexApi.preparePayment({
         vendor_id: vendor.id,
         amount,
         upi_handle: vendor.upi_handle || selectedApp.handle,
@@ -61,7 +61,7 @@ export function PaymentConfirmScreen({ navigation, route }: any) {
           <Pressable onPress={() => navigation.goBack()} style={styles.circleButton}>
             <MaterialIcons name="arrow-back" size={22} color={colors.primary} />
           </Pressable>
-          <Text style={styles.brand}>Ledger</Text>
+          <Text style={styles.brand}>Spedex</Text>
           <View style={styles.headerRight}>
             <MaterialIcons name="notifications" size={22} color={colors.onSurfaceVariant} />
             <View style={styles.lockBadge}>

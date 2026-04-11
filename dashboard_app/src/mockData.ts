@@ -4,7 +4,7 @@ export const mockOverview: DashboardOverview = {
   user: {
     id: 1,
     name: "Alex Thompson",
-    email: "alex@ledger.dev",
+    email: "alex@spedex.app",
     plan: "Premium Member",
     avatar_initials: "AT",
     member_since: "2025-02-10T00:00:00Z",
@@ -28,9 +28,9 @@ export const mockOverview: DashboardOverview = {
     { id: 2, title: "Rent Payment", subtitle: "Auto-pay scheduled", amount: 2100, due_date: "2026-05-02T00:00:00Z", autopay_enabled: true, status: "scheduled" },
     { id: 3, title: "Gym Membership", subtitle: "Wellness plan", amount: 58, due_date: "2026-05-15T00:00:00Z", autopay_enabled: false, status: "scheduled" },
   ],
-  weekly_spending: [132, 204, 96, 185, 268, 142, 412],
+  weekly_spending: [132, 204, 268, 412],
   peak_day_label: "Saturday ($412)",
-  weekly_average: 185.2,
+  weekly_average: 254,
   security_message: "2FA is now available for all external transfers. Enable it in settings for enhanced sanctuary protection.",
 };
 

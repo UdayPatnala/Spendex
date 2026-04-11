@@ -1,15 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-import { ledgerApi, setAuthToken } from "../api/client";
-import type { AuthResponse, LedgerUser } from "../types";
+import { spedexApi, setAuthToken } from "../api/client";
+import type { AuthResponse, SpedexUser } from "../types";
 
-const STORAGE_KEY = "ledger.mobile.session";
+const STORAGE_KEY = "spedex.mobile.session";
 
 type AuthContextValue = {
   ready: boolean;
   token: string | null;
-  user: LedgerUser | null;
+  user: SpedexUser | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -27,7 +27,7 @@ async function persistSession(payload: AuthResponse) {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<LedgerUser | null>(null);
+  const [user, setUser] = useState<SpedexUser | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        const parsed = JSON.parse(raw) as { token?: string; user?: LedgerUser };
+        const parsed = JSON.parse(raw) as { token?: string; user?: SpedexUser };
         if (!parsed.token) {
           if (active) {
             setReady(true);
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setAuthToken(parsed.token);
-        const sessionUser = await ledgerApi.getCurrentUser();
+        const sessionUser = await spedexApi.getCurrentUser();
         if (active) {
           setToken(parsed.token);
           setUser(sessionUser);
@@ -83,14 +83,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       token,
       user,
       async signIn(email, password) {
-        const response = await ledgerApi.login({ email, password });
+        const response = await spedexApi.login({ email, password });
         setAuthToken(response.access_token);
         await persistSession(response);
         setToken(response.access_token);
         setUser(response.user);
       },
       async signUp(name, email, password) {
-        const response = await ledgerApi.signUp({ name, email, password });
+        const response = await spedexApi.signUp({ name, email, password });
         setAuthToken(response.access_token);
         await persistSession(response);
         setToken(response.access_token);

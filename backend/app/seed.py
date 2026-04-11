@@ -103,8 +103,8 @@ def seed_database(session: Session) -> None:
     now = datetime.utcnow()
     user = User(
         name="Alex Thompson",
-        email="alex@ledger.dev",
-        password_hash=hash_password("ledger123"),
+        email="alex@spedex.app",
+        password_hash=hash_password("spedex123"),
         plan="Premium Member",
         avatar_initials="AT",
         member_since=now - timedelta(days=420),

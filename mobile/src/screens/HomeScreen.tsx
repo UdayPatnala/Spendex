@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import { ledgerApi } from "../api/client";
+import { spedexApi } from "../api/client";
 import { mockHomeOverview } from "../api/mockData";
 import { formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
@@ -19,7 +19,7 @@ export function HomeScreen({ navigation }: any) {
   const [data, setData] = useState<HomeOverviewType>(mockHomeOverview);
 
   useEffect(() => {
-    ledgerApi.getHomeOverview().then(setData).catch(() => setData(mockHomeOverview));
+    spedexApi.getHomeOverview().then(setData).catch(() => setData(mockHomeOverview));
   }, []);
 
   const spendRatio = Math.min(data.today_spend / data.today_budget, 1);
@@ -36,7 +36,7 @@ export function HomeScreen({ navigation }: any) {
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{data.user.avatar_initials}</Text>
             </View>
-            <Text style={styles.brand}>Ledger</Text>
+            <Text style={styles.brand}>Spedex</Text>
           </View>
           <MaterialIcons name="notifications" size={24} color={colors.primary} />
         </View>

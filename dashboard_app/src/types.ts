@@ -1,4 +1,4 @@
-export type LedgerUser = {
+export type SpedexUser = {
   id: number;
   name: string;
   email: string;
@@ -10,7 +10,7 @@ export type LedgerUser = {
 export type AuthResponse = {
   access_token: string;
   token_type: "bearer";
-  user: LedgerUser;
+  user: SpedexUser;
 };
 
 export type Vendor = {
@@ -57,7 +57,7 @@ export type BudgetCard = {
 };
 
 export type DashboardOverview = {
-  user: LedgerUser;
+  user: SpedexUser;
   monthly_total: number;
   monthly_budget: number;
   budget_used_ratio: number;
@@ -72,7 +72,7 @@ export type DashboardOverview = {
 };
 
 export type VendorDirectoryData = {
-  user: LedgerUser;
+  user: SpedexUser;
   groups: Record<string, Vendor[]>;
 };
 

@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-import { ledgerApi } from "../api/client";
+import { spedexApi } from "../api/client";
 import { mockVendorDirectory } from "../api/mockData";
 import { accentPalette, formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
@@ -22,7 +22,7 @@ export function PaymentsScreen({ navigation }: any) {
   const deferredQuery = useDeferredValue(query);
 
   useEffect(() => {
-    ledgerApi.getVendorDirectory().then(setData).catch(() => setData(mockVendorDirectory));
+    spedexApi.getVendorDirectory().then(setData).catch(() => setData(mockVendorDirectory));
   }, []);
 
   const groups = useMemo<Record<string, Vendor[]>>(() => {
@@ -51,7 +51,7 @@ export function PaymentsScreen({ navigation }: any) {
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{data.user.avatar_initials}</Text>
           </View>
-          <Text style={styles.brand}>Ledger</Text>
+          <Text style={styles.brand}>Spedex</Text>
           <View style={styles.headerSpacer} />
           <MaterialIcons name="notifications" size={24} color={colors.primary} />
         </View>

@@ -8,8 +8,8 @@ import {
   View,
 } from "react-native";
 
-import { ledgerApi } from "../api/client";
-import { mockAnalyticsData, mockHomeOverview } from "../api/mockData";
+import { spedexApi } from "../api/client";
+import { mockAnalyticsData } from "../api/mockData";
 import { accentPalette, formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
 import type { AnalyticsData } from "../types";
@@ -18,14 +18,14 @@ export function AnalyticsScreen() {
   const [data, setData] = useState<AnalyticsData>(mockAnalyticsData);
 
   useEffect(() => {
-    ledgerApi.getAnalytics().then(setData).catch(() => setData(mockAnalyticsData));
+    spedexApi.getAnalytics().then(setData).catch(() => setData(mockAnalyticsData));
   }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.brand}>Ledger</Text>
+          <Text style={styles.brand}>Spedex</Text>
           <Text style={styles.monthlyTag}>Monthly Insights</Text>
           <MaterialIcons name="notifications" size={22} color={colors.primary} />
         </View>

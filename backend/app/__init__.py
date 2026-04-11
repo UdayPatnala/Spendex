@@ -1,2 +1,1 @@
-"""Ledger API package."""
-
+"""Spedex API package."""

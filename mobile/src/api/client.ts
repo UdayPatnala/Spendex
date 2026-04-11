@@ -5,7 +5,7 @@ import type {
   AuthResponse,
   BudgetScreenData,
   HomeOverview,
-  LedgerUser,
+  SpedexUser,
   PaymentIntentResponse,
   VendorDirectoryData,
 } from "../types";
@@ -36,7 +36,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json();
 }
 
-export const ledgerApi = {
+export const spedexApi = {
   login: (payload: { email: string; password: string }) =>
     request<AuthResponse>("/auth/login", {
       method: "POST",
@@ -47,7 +47,7 @@ export const ledgerApi = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
-  getCurrentUser: () => request<LedgerUser>("/auth/me"),
+  getCurrentUser: () => request<SpedexUser>("/auth/me"),
   getHomeOverview: () => request<HomeOverview>("/mobile/home"),
   getBudgetScreen: () => request<BudgetScreenData>("/mobile/budgets"),
   getVendorDirectory: () => request<VendorDirectoryData>("/mobile/vendors"),

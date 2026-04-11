@@ -3,6 +3,8 @@ import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 
 import { getCurrentUser, loadDashboardBundle, login, setAuthToken, signUp } from "./api";
 import { mockAnalytics, mockBudget, mockOverview, mockVendors } from "./mockData";
 import type {
+  AnalyticsData,
+  BudgetScreenData,
   DashboardOverview,
   Transaction,
   VendorDirectoryData,
@@ -10,7 +12,7 @@ import type {
 
 type ViewId = "home" | "payments" | "analytics" | "budget" | "settings";
 type AuthMode = "login" | "signup";
-const STORAGE_KEY = "ledger.dashboard.session";
+const STORAGE_KEY = "spedex.dashboard.session";
 
 const navItems: Array<{ id: ViewId; label: string; icon: string }> = [
   { id: "home", label: "Home", icon: "home" },
@@ -83,8 +85,8 @@ function Sidebar({
           <span className="material-symbols-outlined">account_balance</span>
         </div>
         <div className="brand-copy">
-          <h1>Ledger</h1>
-          <p>Secure Digital Sanctuary</p>
+          <h1>Spedex</h1>
+          <p>Speed + Spending Index</p>
         </div>
       </div>
 
@@ -184,14 +186,14 @@ function AuthView({
             <span className="material-symbols-outlined">account_balance</span>
           </div>
           <div className="brand-copy">
-            <h1>Ledger</h1>
-            <p>Secure Digital Sanctuary</p>
+            <h1>Spedex</h1>
+            <p>Speed + Spending Index</p>
           </div>
         </div>
 
         <p className="eyebrow">Session Access</p>
         <h2 className="page-title">
-          {mode === "login" ? "Sign in to your sanctuary" : "Create a new Ledger account"}
+          {mode === "login" ? "Sign in to your Spedex workspace" : "Create a new Spedex account"}
         </h2>
         <p className="subtle">
           {mode === "login"
@@ -229,11 +231,11 @@ function AuthView({
           />
           {error ? <div className="auth-error">{error}</div> : null}
           <button className="auth-submit" type="button" onClick={onSubmit} disabled={submitting}>
-            {submitting ? "Working..." : mode === "login" ? "Enter Ledger" : "Create Account"}
+            {submitting ? "Working..." : mode === "login" ? "Enter Spedex" : "Create Account"}
           </button>
         </div>
 
-        <p className="subtle">Demo credentials: `alex@ledger.dev` / `ledger123`</p>
+        <p className="subtle">Demo credentials: `alex@spedex.app` / `spedex123`</p>
       </section>
     </main>
   );
@@ -316,7 +318,7 @@ function HomeView({
                 <div>
                   <p className="transaction-title">{transaction.description}</p>
                   <span className="subtle">
-                    {formatDate(transaction.occurred_at)} • {formatTime(transaction.occurred_at)} • {transaction.category}
+                    {formatDate(transaction.occurred_at)} | {formatTime(transaction.occurred_at)} | {transaction.category}
                   </span>
                 </div>
                 <strong style={{ color: transaction.direction === "income" ? "#0a7b47" : "#c72e2e" }}>
@@ -335,7 +337,7 @@ function HomeView({
             <p className="eyebrow" style={{ color: "rgba(255,255,255,0.72)" }}>
               Weekly Spending
             </p>
-            <span className="muted-chip">Aug 18 - 24</span>
+            <span className="muted-chip">Rolling 4-week view</span>
           </div>
           <div className="weekly-bars">
             {overview.weekly_spending.map((value, index) => (
@@ -376,7 +378,7 @@ function HomeView({
                 <div>
                   <p className="reminder-title">{reminder.title}</p>
                   <span className="subtle">
-                    {reminder.subtitle} • {formatDate(reminder.due_date)}
+                    {reminder.subtitle} | {formatDate(reminder.due_date)}
                   </span>
                 </div>
                 <strong>{formatCurrency(reminder.amount)}</strong>
@@ -529,7 +531,7 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
         <div className="section-header">
           <div>
             <p className="eyebrow">Current Planning</p>
-            <h2 className="page-title">Weekly Ledger</h2>
+            <h2 className="page-title">Weekly Index</h2>
           </div>
           <div>
             <p className="eyebrow">Remaining Budget</p>
@@ -573,7 +575,7 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
               <div>
                 <p className="reminder-title">{reminder.title}</p>
                 <span className="subtle">
-                  {reminder.subtitle} • {formatDate(reminder.due_date)}
+                  {reminder.subtitle} | {formatDate(reminder.due_date)}
                 </span>
               </div>
               <strong>{formatCurrency(reminder.amount)}</strong>
@@ -659,8 +661,8 @@ export default function App() {
   const [sessionUser, setSessionUser] = useState<DashboardOverview["user"] | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authName, setAuthName] = useState("");
-  const [authEmail, setAuthEmail] = useState("alex@ledger.dev");
-  const [authPassword, setAuthPassword] = useState("ledger123");
+  const [authEmail, setAuthEmail] = useState("alex@spedex.app");
+  const [authPassword, setAuthPassword] = useState("spedex123");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSubmitting, setAuthSubmitting] = useState(false);
 
@@ -781,7 +783,7 @@ export default function App() {
       <main className="auth-shell">
         <section className="auth-card">
           <p className="eyebrow">Loading</p>
-          <h2 className="page-title">Restoring your Ledger session</h2>
+          <h2 className="page-title">Restoring your Spedex session</h2>
         </section>
       </main>
     );

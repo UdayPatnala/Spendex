@@ -161,7 +161,7 @@ def get_monthly_expenses(transactions: list[Transaction]) -> list[Transaction]:
 
 def build_weekly_spend(transactions: list[Transaction]) -> list[WeeklySpendPoint]:
     now = datetime.utcnow()
-    start_of_week = now - timedelta(days=now.weekday())
+    start_of_week = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
     series: list[WeeklySpendPoint] = []
     for index in range(3, -1, -1):
         week_start = start_of_week - timedelta(days=index * 7)
@@ -233,7 +233,7 @@ def signup(payload: SignupRequest, session: Session = Depends(get_db)) -> TokenR
         email=payload.email,
         password_hash=hash_password(payload.password),
         plan="Starter",
-        avatar_initials="".join(part[0] for part in payload.name.split()[:2]).upper() or "LG",
+        avatar_initials="".join(part[0] for part in payload.name.split()[:2]).upper() or "SP",
     )
     session.add(user)
     session.flush()
@@ -379,7 +379,7 @@ def prepare_payment(
 ) -> PaymentIntentResponse:
     vendor = session.get(Vendor, payload.vendor_id) if payload.vendor_id else None
     upi_handle = payload.upi_handle or (vendor.upi_handle if vendor else None)
-    payee_name = payload.payee_name or (vendor.name if vendor else "Ledger Merchant")
+    payee_name = payload.payee_name or (vendor.name if vendor else "Spedex Merchant")
     if not upi_handle:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="UPI handle is required")
 
@@ -399,7 +399,7 @@ def prepare_payment(
     session.commit()
     session.refresh(transaction)
 
-    upi_url = f"upi://pay?pa={upi_handle}&pn={payee_name}&am={payload.amount:.2f}&cu=INR&tn=ledger-{transaction.id}"
+    upi_url = f"upi://pay?pa={upi_handle}&pn={payee_name}&am={payload.amount:.2f}&cu=INR&tn=spedex-{transaction.id}"
     return PaymentIntentResponse(
         transaction=serialize_transaction(transaction),
         upi_url=upi_url,

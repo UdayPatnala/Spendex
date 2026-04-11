@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from backend.app.main import app as ledger_app
+from backend.app.main import app as spedex_app
 
 SERVICE_PREFIX = "/_/backend"
 
@@ -33,4 +33,4 @@ async def app(scope, receive, send):
 
         scope = updated_scope
 
-    await ledger_app(scope, receive, send)
+    await spedex_app(scope, receive, send)

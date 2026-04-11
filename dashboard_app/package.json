@@ -1,5 +1,5 @@
 {
-  "name": "ledger-dashboard",
+  "name": "spedex-dashboard",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -20,4 +20,3 @@
     "vite": "^6.3.5"
   }
 }
-

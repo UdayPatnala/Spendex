@@ -4,7 +4,7 @@ export const mockHomeOverview: HomeOverview = {
   user: {
     id: 1,
     name: "Alex Thompson",
-    email: "alex@ledger.dev",
+    email: "alex@spedex.app",
     plan: "Premium Member",
     avatar_initials: "AT",
     member_since: "2025-02-10T00:00:00Z",

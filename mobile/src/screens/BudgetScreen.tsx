@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import { ledgerApi } from "../api/client";
+import { spedexApi } from "../api/client";
 import { mockBudgetData } from "../api/mockData";
 import { accentPalette, formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
@@ -19,18 +19,18 @@ export function BudgetScreen() {
   const [data, setData] = useState<BudgetScreenData>(mockBudgetData);
 
   useEffect(() => {
-    ledgerApi.getBudgetScreen().then(setData).catch(() => setData(mockBudgetData));
+    spedexApi.getBudgetScreen().then(setData).catch(() => setData(mockBudgetData));
   }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.brand}>Ledger</Text>
+        <Text style={styles.brand}>Spedex</Text>
 
         <View style={styles.hero}>
           <View>
             <Text style={styles.eyebrow}>Current Planning</Text>
-            <Text style={styles.title}>Weekly Ledger</Text>
+            <Text style={styles.title}>Weekly Index</Text>
           </View>
           <View style={styles.remainingBox}>
             <Text style={styles.remainingLabel}>Remaining Budget</Text>

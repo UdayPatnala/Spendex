@@ -27,21 +27,22 @@ export function SettingsScreen() {
     biometric: true,
     digest: true,
   });
+  const profile = user ?? mockHomeOverview.user;
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.brand}>Ledger</Text>
+        <Text style={styles.brand}>Spedex</Text>
 
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{mockHomeOverview.user.avatar_initials}</Text>
+            <Text style={styles.avatarText}>{profile.avatar_initials}</Text>
           </View>
           <View style={styles.profileMeta}>
-            <Text style={styles.name}>{mockHomeOverview.user.name}</Text>
-            <Text style={styles.email}>{mockHomeOverview.user.email}</Text>
+            <Text style={styles.name}>{profile.name}</Text>
+            <Text style={styles.email}>{profile.email}</Text>
             <View style={styles.planBadge}>
-              <Text style={styles.planLabel}>{mockHomeOverview.user.plan}</Text>
+              <Text style={styles.planLabel}>{profile.plan}</Text>
             </View>
           </View>
         </View>
@@ -74,7 +75,7 @@ export function SettingsScreen() {
           {[
             { icon: "help-outline", title: "Help Center", subtitle: "Guides for transfers, budgeting, and analytics." },
             { icon: "shield", title: "Security Review", subtitle: "Inspect sessions, devices, and transfer permissions." },
-            { icon: "mail-outline", title: "Contact Support", subtitle: "support@ledger.dev" },
+            { icon: "mail-outline", title: "Contact Support", subtitle: "support@spedex.app" },
           ].map((item) => (
             <View key={item.title} style={styles.supportRow}>
               <View style={styles.supportIcon}>
@@ -89,7 +90,7 @@ export function SettingsScreen() {
         </View>
 
         <Pressable style={styles.signOutButton} onPress={() => void signOut()}>
-          <Text style={styles.signOutLabel}>Sign out {user?.name ?? mockHomeOverview.user.name}</Text>
+          <Text style={styles.signOutLabel}>Sign out {profile.name}</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

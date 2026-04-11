@@ -3,7 +3,7 @@ import type {
   AuthResponse,
   BudgetScreenData,
   DashboardOverview,
-  LedgerUser,
+  SpedexUser,
   VendorDirectoryData,
 } from "./types";
 
@@ -59,7 +59,7 @@ export function signUp(payload: { name: string; email: string; password: string 
 }
 
 export function getCurrentUser() {
-  return request<LedgerUser>("/auth/me");
+  return request<SpedexUser>("/auth/me");
 }
 
 export async function loadDashboardBundle() {
