@@ -66,7 +66,9 @@ def get_demo_user(session: Session) -> User:
 
 def get_user_from_authorization(session: Session, authorization: str | None) -> User:
     if not authorization:
-        return get_demo_user(session)
+        if settings.allow_demo_auth_fallback:
+            return get_demo_user(session)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
 
     scheme, _, token = authorization.partition(" ")
     if scheme.lower() != "bearer" or not token:
@@ -141,6 +143,13 @@ def serialize_reminder(reminder: Reminder) -> ReminderOut:
     return ReminderOut.model_validate(reminder)
 
 
+def format_inr(amount: float) -> str:
+    rounded = round(amount, 2)
+    if rounded.is_integer():
+        return f"₹{int(rounded):,}"
+    return f"₹{rounded:,.2f}"
+
+
 def get_transactions(session: Session, user_id: int) -> list[Transaction]:
     return list(
         session.scalars(
@@ -179,20 +188,22 @@ def build_weekly_spend(transactions: list[Transaction]) -> list[WeeklySpendPoint
 def build_category_breakdown(transactions: list[Transaction]) -> list[CategoryBreakdown]:
     totals = defaultdict(float)
     accent_map = {
-        "Food & Dining": "mint",
+        "Snacks": "rose",
+        "Groceries": "mint",
+        "Books": "lavender",
         "Transport": "amber",
-        "Utilities": "lavender",
-        "Subscriptions": "indigo",
-        "Housing": "indigo",
-        "Shopping": "mint",
-        "Health": "amber",
+        "Bills": "amber",
+        "Subscriptions": "lavender",
+        "Rent": "rose",
+        "Shopping": "rose",
+        "Health": "mint",
     }
     for txn in transactions:
         totals[txn.category] += txn.amount
     grand_total = sum(totals.values()) or 1
     ordered = sorted(totals.items(), key=lambda item: item[1], reverse=True)
     return [
-        CategoryBreakdown(category=category, percentage=round(amount / grand_total * 100, 1), accent=accent_map.get(category, "indigo"))
+        CategoryBreakdown(category=category, percentage=round(amount / grand_total * 100, 1), accent=accent_map.get(category, "rose"))
         for category, amount in ordered[:4]
     ]
 
@@ -204,7 +215,7 @@ def build_peak_day_label(transactions: list[Transaction]) -> str:
     for txn in transactions:
         spend_by_day[txn.occurred_at.strftime("%A")] += txn.amount
     day, amount = max(spend_by_day.items(), key=lambda item: item[1])
-    return f"{day} (${amount:.0f})"
+    return f"{day} ({format_inr(amount)})"
 
 
 def build_budget_copy(monthly_spend: float, monthly_budget: float) -> str:
@@ -213,9 +224,81 @@ def build_budget_copy(monthly_spend: float, monthly_budget: float) -> str:
     remaining = monthly_budget - monthly_spend
     if remaining >= 0:
         delta = round(remaining / monthly_budget * 100, 1)
-        return f"You are on track. Spending is {delta}% under plan."
+        return f"You are on track. Your outflow is {delta}% under plan this month."
     delta = round(abs(remaining) / monthly_budget * 100, 1)
-    return f"Budget is over target by {delta}%. Time to slow the burn."
+    return f"Budget is over target by {delta}%. A lighter weekend will bring the index back in line."
+
+
+def build_highest_sector(category_breakdown: list[CategoryBreakdown]) -> HighlightCard:
+    if not category_breakdown:
+        return HighlightCard(
+            title="Fresh Month",
+            subtitle="Once spending starts, the biggest category will surface here.",
+            accent="rose",
+            icon="insights",
+        )
+
+    top = category_breakdown[0]
+    icon_map = {
+        "Snacks": "restaurant",
+        "Groceries": "shopping_basket",
+        "Books": "menu_book",
+        "Transport": "directions_bus",
+        "Bills": "bolt",
+        "Shopping": "shopping_bag",
+        "Health": "fitness_center",
+        "Rent": "home_work",
+        "Subscriptions": "cloud",
+    }
+    return HighlightCard(
+        title=top.category,
+        subtitle=f"{top.percentage}% of this month's spend is flowing into {top.category.lower()}.",
+        accent=top.accent,
+        icon=icon_map.get(top.category, "payments"),
+    )
+
+
+def build_busiest_day(transactions: list[Transaction]) -> HighlightCard:
+    if not transactions:
+        return HighlightCard(
+            title="No peak day yet",
+            subtitle="Your next few payments will reveal the busiest spend day.",
+            accent="amber",
+            icon="event_busy",
+        )
+
+    spend_by_day = defaultdict(float)
+    for txn in transactions:
+        spend_by_day[txn.occurred_at.strftime("%A")] += txn.amount
+
+    day, amount = max(spend_by_day.items(), key=lambda item: item[1])
+    return HighlightCard(
+        title=day,
+        subtitle=f"Your heaviest outflow this month landed on {day} at {format_inr(amount)}.",
+        accent="amber",
+        icon="event_busy",
+    )
+
+
+def build_smart_insight(
+    category_breakdown: list[CategoryBreakdown],
+    weekday_ratio: float,
+    weekend_ratio: float,
+) -> str:
+    if not category_breakdown:
+        return "Your first few payments will unlock richer spending signals here."
+
+    top_category = category_breakdown[0]
+    if weekend_ratio > weekday_ratio:
+        return (
+            f"Weekend spending is leading at {weekend_ratio}%. "
+            f"Keeping one low-spend day could soften your {top_category.category.lower()} bill."
+        )
+
+    return (
+        f"{top_category.category} is your biggest basket at {top_category.percentage}%. "
+        "A small trim there will move your monthly index fastest."
+    )
 
 
 @app.get("/api/health")
@@ -233,7 +316,7 @@ def signup(payload: SignupRequest, session: Session = Depends(get_db)) -> TokenR
         name=payload.name,
         email=payload.email,
         password_hash=hash_password(payload.password),
-        plan="Starter",
+        plan="Rose Gold",
         avatar_initials="".join(part[0] for part in payload.name.split()[:2]).upper() or "SP",
     )
     session.add(user)
@@ -260,6 +343,7 @@ def auth_me(user: User = Depends(get_authenticated_user)) -> UserOut:
 @app.get("/api/mobile/home", response_model=HomeOverview)
 def mobile_home(session: Session = Depends(get_db), user: User = Depends(get_current_user)) -> HomeOverview:
     transactions = get_transactions(session, user.id)
+    budgets = list(session.scalars(select(Budget).where(Budget.user_id == user.id)))
     today = datetime.utcnow().date()
     today_expense = sum(txn.amount for txn in transactions if txn.direction == "expense" and txn.occurred_at.date() == today)
     quick_pay = list(
@@ -268,13 +352,18 @@ def mobile_home(session: Session = Depends(get_db), user: User = Depends(get_cur
         )
     )
     recent = transactions[:3]
-    today_budget = 50.0
-    remaining = max(today_budget - today_expense, 0)
+    monthly_budget = sum(item.limit_amount for item in budgets) or 75000.0
+    today_budget = round(monthly_budget / 30, 2)
+    remaining = today_budget - today_expense
+    if remaining >= 0:
+        on_track_copy = f"Nice pace. You still have {format_inr(remaining)} left in today's plan."
+    else:
+        on_track_copy = f"You're {format_inr(abs(remaining))} past today's pace. One lighter order brings it back."
     return HomeOverview(
         user=serialize_user(user),
         today_spend=round(today_expense, 2),
         today_budget=today_budget,
-        on_track_copy=f"You're on track! Only ${remaining:.2f} left in your budget for today.",
+        on_track_copy=on_track_copy,
         quick_pay=[serialize_vendor(vendor) for vendor in quick_pay],
         recent_transactions=[serialize_transaction(txn) for txn in recent],
     )
@@ -287,11 +376,29 @@ def mobile_budgets(session: Session = Depends(get_db), user: User = Depends(get_
         session.scalars(select(Reminder).where(Reminder.user_id == user.id).order_by(Reminder.due_date.asc(), Reminder.id.asc()))
     )
     remaining_budget = sum(budget.limit_amount - budget.spent for budget in budgets)
+    healthiest_budget = next(
+        (
+            budget
+            for budget in sorted(
+                budgets,
+                key=lambda item: (item.spent / item.limit_amount) if item.limit_amount else 1,
+            )
+            if budget.limit_amount > 0
+        ),
+        None,
+    )
+    if healthiest_budget:
+        savings_tip = (
+            f"{healthiest_budget.category} is still comfortably under plan. "
+            "Sweep that buffer into your travel or emergency fund before month-end."
+        )
+    else:
+        savings_tip = "Add a few budgets to unlock sharper saving prompts."
     return BudgetScreenResponse(
         remaining_budget=round(remaining_budget, 2),
         budgets=[serialize_budget(item) for item in budgets],
         reminders=[serialize_reminder(item) for item in reminders],
-        savings_tip="You've spent 20% less on transport this week than usual. Consider moving that extra cash into your emergency fund.",
+        savings_tip=savings_tip,
     )
 
 
@@ -315,31 +422,24 @@ def mobile_analytics(session: Session = Depends(get_db), user: User = Depends(ge
     weekday_total = sum(txn.amount for txn in monthly_expenses if txn.occurred_at.weekday() < 5)
     weekend_total = sum(txn.amount for txn in monthly_expenses if txn.occurred_at.weekday() >= 5)
     total_spent = round(sum(txn.amount for txn in monthly_expenses), 2)
+    weekday_ratio = round(weekday_total / max(total_spent, 1) * 100, 1)
+    weekend_ratio = round(weekend_total / max(total_spent, 1) * 100, 1)
     return AnalyticsResponse(
         total_spent=total_spent,
-        smart_insight="Your savings increased by 12% compared to last month.",
+        smart_insight=build_smart_insight(category_breakdown, weekday_ratio, weekend_ratio),
         category_breakdown=category_breakdown,
         weekly_spend=weekly_spend,
-        highest_sector=HighlightCard(
-            title="Food",
-            subtitle="You spent $1,070 on dining out this month.",
-            accent="mint",
-            icon="restaurant",
-        ),
-        busiest_day=HighlightCard(
-            title="Saturday",
-            subtitle="Weekends account for 64% of your total activity.",
-            accent="amber",
-            icon="event_busy",
-        ),
-        weekday_ratio=round(weekday_total / max(total_spent, 1) * 100, 1),
-        weekend_ratio=round(weekend_total / max(total_spent, 1) * 100, 1),
+        highest_sector=build_highest_sector(category_breakdown),
+        busiest_day=build_busiest_day(monthly_expenses),
+        weekday_ratio=weekday_ratio,
+        weekend_ratio=weekend_ratio,
     )
 
 
 @app.get("/api/dashboard/overview", response_model=DashboardOverview)
 def dashboard_overview(session: Session = Depends(get_db), user: User = Depends(get_current_user)) -> DashboardOverview:
     transactions = get_transactions(session, user.id)
+    budgets = list(session.scalars(select(Budget).where(Budget.user_id == user.id)))
     reminders = list(
         session.scalars(select(Reminder).where(Reminder.user_id == user.id).order_by(Reminder.due_date.asc(), Reminder.id.asc()))
     )
@@ -348,14 +448,14 @@ def dashboard_overview(session: Session = Depends(get_db), user: User = Depends(
     )
     monthly_expenses = get_monthly_expenses(transactions)
     monthly_total = round(sum(txn.amount for txn in monthly_expenses), 2)
-    monthly_budget = 4800.0
+    monthly_budget = round(sum(item.limit_amount for item in budgets), 2)
     weekly_spending = [point.amount for point in build_weekly_spend(transactions)]
     weekly_average = round(sum(weekly_spending) / max(len(weekly_spending), 1), 2)
     return DashboardOverview(
         user=serialize_user(user),
         monthly_total=monthly_total,
         monthly_budget=monthly_budget,
-        budget_used_ratio=round(monthly_total / monthly_budget, 3),
+        budget_used_ratio=round(monthly_total / max(monthly_budget, 1), 3),
         budget_copy=build_budget_copy(monthly_total, monthly_budget),
         quick_pay=[serialize_vendor(item) for item in quick_pay],
         recent_transactions=[serialize_transaction(item) for item in transactions[:3]],
@@ -363,7 +463,7 @@ def dashboard_overview(session: Session = Depends(get_db), user: User = Depends(
         weekly_spending=weekly_spending,
         peak_day_label=build_peak_day_label(monthly_expenses),
         weekly_average=weekly_average,
-        security_message="2FA is now available for all external transfers. Enable it in settings for enhanced sanctuary protection.",
+        security_message="UPI guardrails are active. Add device lock and payment alerts for every high-value transfer.",
     )
 
 

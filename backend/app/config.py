@@ -39,6 +39,12 @@ class Settings:
     )
     # Set to "true" to seed a demo user on first startup (dev/staging only)
     seed_demo: bool = os.getenv("SPEDEX_SEED_DEMO", "").lower() in {"1", "true", "yes"}
+    # Set to "true" only when you explicitly want unauthenticated demo browsing.
+    allow_demo_auth_fallback: bool = os.getenv("SPEDEX_ALLOW_DEMO_AUTH_FALLBACK", "").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
 
 
 settings = Settings()

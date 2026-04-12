@@ -8,28 +8,144 @@ from sqlalchemy.orm import Session
 from .models import Budget, Reminder, Transaction, User, Vendor
 from .security import hash_password
 
+DEMO_EMAIL = "ananya@spedex.app"
+DEMO_PASSWORD = "spedex123"
 
-def populate_sample_account(session: Session, user: User, *, now: datetime | None = None) -> None:
+
+def reset_sample_account(session: Session, user: User) -> None:
+    session.query(Transaction).filter(Transaction.user_id == user.id).delete()
+    session.query(Reminder).filter(Reminder.user_id == user.id).delete()
+    session.query(Budget).filter(Budget.user_id == user.id).delete()
+    session.query(Vendor).filter(Vendor.user_id == user.id).delete()
+    session.flush()
+
+
+def populate_sample_account(
+    session: Session,
+    user: User,
+    *,
+    now: datetime | None = None,
+    replace_existing: bool = False,
+) -> None:
     existing_vendor = session.scalar(select(Vendor.id).where(Vendor.user_id == user.id).limit(1))
-    if existing_vendor:
+    if existing_vendor and not replace_existing:
         return
+    if replace_existing:
+        reset_sample_account(session, user)
 
     now = now or datetime.utcnow()
 
     vendors = [
-        Vendor(user_id=user.id, name="Starbucks", category="Food & Dining", icon="coffee", accent="mint", upi_handle="starbucks@okbank", default_amount=5.50, is_quick_pay=True),
-        Vendor(user_id=user.id, name="Metro", category="Transport", icon="subway", accent="amber", upi_handle="metro@okicici", default_amount=2.00, is_quick_pay=True),
-        Vendor(user_id=user.id, name="Zerox", category="Office", icon="print", accent="indigo", upi_handle="xerox@okaxis", default_amount=1.00, is_quick_pay=True),
-        Vendor(user_id=user.id, name="Blue Bottle Coffee", category="Food & Dining", icon="restaurant", accent="mint", upi_handle="bluebottle@oksbi", default_amount=15.00, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Whole Foods Market", category="Food & Dining", icon="shopping_basket", accent="mint", upi_handle="wholefoods@okhdfc", default_amount=85.20, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Uber Technologies", category="Transport", icon="directions_car", accent="amber", upi_handle="uber@okaxis", default_amount=24.00, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Con Edison", category="Utilities", icon="bolt", accent="lavender", upi_handle="conedison@oksbi", default_amount=142.00, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Verizon Wireless", category="Utilities", icon="wifi", accent="lavender", upi_handle="verizon@okicici", default_amount=75.00, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Amazon AWS Cloud", category="Subscriptions", icon="cloud", accent="indigo", upi_handle="aws@okhdfc", default_amount=42.99, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Rent Payment", category="Housing", icon="home_work", accent="indigo", upi_handle="rent@okaxis", default_amount=2100.00, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Gym Membership", category="Health", icon="fitness_center", accent="amber", upi_handle="gym@oksbi", default_amount=58.00, is_quick_pay=False),
-        Vendor(user_id=user.id, name="Artisan Bakery", category="Food & Dining", icon="bakery_dining", accent="mint", upi_handle="artisan@okhdfc", default_amount=12.40, is_quick_pay=False),
-        Vendor(user_id=user.id, name="City Transit", category="Transport", icon="directions_bus", accent="amber", upi_handle="citytransit@okaxis", default_amount=2.75, is_quick_pay=False),
+        Vendor(
+            user_id=user.id,
+            name="Blue Tokai",
+            category="Snacks",
+            icon="coffee",
+            accent="rose",
+            upi_handle="bluetokai@okhdfc",
+            default_amount=240.0,
+            is_quick_pay=True,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Namma Metro",
+            category="Transport",
+            icon="subway",
+            accent="amber",
+            upi_handle="metro@okaxis",
+            default_amount=60.0,
+            is_quick_pay=True,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Sapna Book House",
+            category="Books",
+            icon="menu_book",
+            accent="lavender",
+            upi_handle="sapnabooks@oksbi",
+            default_amount=649.0,
+            is_quick_pay=True,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Blinkit",
+            category="Groceries",
+            icon="shopping_basket",
+            accent="mint",
+            upi_handle="blinkit@okhdfc",
+            default_amount=820.0,
+            is_quick_pay=False,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Zomato",
+            category="Snacks",
+            icon="restaurant",
+            accent="rose",
+            upi_handle="zomato@okicici",
+            default_amount=325.0,
+            is_quick_pay=False,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Myntra",
+            category="Shopping",
+            icon="shopping_bag",
+            accent="rose",
+            upi_handle="myntra@okaxis",
+            default_amount=2199.0,
+            is_quick_pay=False,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="BESCOM",
+            category="Bills",
+            icon="bolt",
+            accent="amber",
+            upi_handle="bescom@oksbi",
+            default_amount=1860.0,
+            is_quick_pay=False,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="JioFiber",
+            category="Bills",
+            icon="wifi",
+            accent="lavender",
+            upi_handle="jiofiber@okicici",
+            default_amount=999.0,
+            is_quick_pay=False,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Netflix India",
+            category="Subscriptions",
+            icon="cloud",
+            accent="lavender",
+            upi_handle="netflix@okhdfc",
+            default_amount=649.0,
+            is_quick_pay=False,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Rent - Indiranagar",
+            category="Rent",
+            icon="home_work",
+            accent="rose",
+            upi_handle="rent@okaxis",
+            default_amount=22000.0,
+            is_quick_pay=False,
+        ),
+        Vendor(
+            user_id=user.id,
+            name="Apollo Pharmacy",
+            category="Health",
+            icon="fitness_center",
+            accent="mint",
+            upi_handle="apollo@oksbi",
+            default_amount=540.0,
+            is_quick_pay=False,
+        ),
     ]
     session.add_all(vendors)
     session.flush()
@@ -37,23 +153,58 @@ def populate_sample_account(session: Session, user: User, *, now: datetime | Non
     vendor_by_name = {vendor.name: vendor for vendor in vendors}
 
     budgets = [
-        Budget(user_id=user.id, category="Food & Dining", icon="restaurant", accent="mint", spent=100.0, limit_amount=150.0),
-        Budget(user_id=user.id, category="Transport", icon="directions_bus", accent="amber", spent=45.0, limit_amount=80.0),
-        Budget(user_id=user.id, category="Shopping", icon="shopping_bag", accent="indigo", spent=120.0, limit_amount=300.0),
+        Budget(user_id=user.id, category="Groceries", icon="shopping_basket", accent="mint", spent=5400.0, limit_amount=9000.0),
+        Budget(user_id=user.id, category="Snacks", icon="restaurant", accent="rose", spent=1650.0, limit_amount=3000.0),
+        Budget(user_id=user.id, category="Books", icon="menu_book", accent="lavender", spent=920.0, limit_amount=2500.0),
+        Budget(user_id=user.id, category="Transport", icon="directions_bus", accent="amber", spent=1180.0, limit_amount=4000.0),
+        Budget(user_id=user.id, category="Shopping", icon="shopping_bag", accent="rose", spent=3420.0, limit_amount=8000.0),
     ]
     session.add_all(budgets)
 
     reminders = [
-        Reminder(user_id=user.id, title="Monthly Rent Payment", subtitle="Secure home lease", amount=2100.0, due_date=now + timedelta(days=3), autopay_enabled=True, status="scheduled"),
-        Reminder(user_id=user.id, title="Electricity Bill", subtitle="City power utility", amount=203.0, due_date=now + timedelta(days=5), autopay_enabled=False, status="scheduled"),
-        Reminder(user_id=user.id, title="Cloud Storage Sync", subtitle="Annual productivity tools", amount=19.0, due_date=now + timedelta(days=6), autopay_enabled=True, status="scheduled"),
+        Reminder(
+            user_id=user.id,
+            title="Rent - Indiranagar",
+            subtitle="UPI AutoPay ready",
+            amount=22000.0,
+            due_date=now + timedelta(days=3),
+            autopay_enabled=True,
+            status="scheduled",
+        ),
+        Reminder(
+            user_id=user.id,
+            title="JioFiber Bill",
+            subtitle="Broadband recharge",
+            amount=999.0,
+            due_date=now + timedelta(days=5),
+            autopay_enabled=True,
+            status="scheduled",
+        ),
+        Reminder(
+            user_id=user.id,
+            title="Netflix India",
+            subtitle="Streaming renewal",
+            amount=649.0,
+            due_date=now + timedelta(days=9),
+            autopay_enabled=False,
+            status="scheduled",
+        ),
     ]
     session.add_all(reminders)
 
-    def expense(name: str, amount: float, category: str, when: datetime, payment_method: str = "UPI", account_label: str = "Personal Account") -> Transaction:
+    def expense(
+        name: str,
+        amount: float,
+        category: str,
+        when: datetime,
+        *,
+        payment_method: str = "UPI",
+        account_label: str = "HDFC UPI",
+    ) -> Transaction:
+        vendor = vendor_by_name.get(name)
         return Transaction(
             user_id=user.id,
-            vendor_id=vendor_by_name.get(name).id if vendor_by_name.get(name) else None,
+            vendor_id=vendor.id if vendor else None,
             description=name,
             category=category,
             amount=amount,
@@ -66,27 +217,25 @@ def populate_sample_account(session: Session, user: User, *, now: datetime | Non
         )
 
     transactions = [
-        expense("Artisan Bakery", 12.40, "Food & Dining", now.replace(hour=11, minute=45, second=0, microsecond=0)),
-        expense("City Transit", 2.75, "Transport", now.replace(hour=8, minute=30, second=0, microsecond=0)),
-        expense("Whole Foods Market", 48.20, "Food & Dining", now - timedelta(days=1)),
-        expense("Blue Bottle Coffee", 15.00, "Food & Dining", now - timedelta(days=2)),
-        expense("Uber Technologies", 18.50, "Transport", now - timedelta(days=3), payment_method="Card", account_label="Personal Account"),
-        expense("Amazon AWS Cloud", 42.99, "Subscriptions", now - timedelta(days=7), payment_method="AutoPay", account_label="Debit Card ****42"),
-        expense("Gym Membership", 58.00, "Health", now - timedelta(days=9), payment_method="Card"),
-        expense("Rent Payment", 2100.00, "Housing", now - timedelta(days=11), payment_method="Bank Transfer"),
-        expense("Con Edison", 142.00, "Utilities", now - timedelta(days=14), payment_method="UPI"),
-        expense("Verizon Wireless", 75.00, "Utilities", now - timedelta(days=17), payment_method="Card"),
-        expense("Starbucks", 5.50, "Food & Dining", now - timedelta(days=18), payment_method="UPI"),
-        expense("Metro", 2.00, "Transport", now - timedelta(days=20), payment_method="UPI"),
-        expense("Zerox", 1.00, "Office", now - timedelta(days=21), payment_method="UPI"),
+        expense("Blue Tokai", 240.0, "Snacks", now.replace(hour=10, minute=20, second=0, microsecond=0)),
+        expense("Namma Metro", 60.0, "Transport", now.replace(hour=8, minute=5, second=0, microsecond=0)),
+        expense("Blinkit", 820.0, "Groceries", now - timedelta(days=1), payment_method="UPI", account_label="ICICI UPI"),
+        expense("Sapna Book House", 649.0, "Books", now - timedelta(days=2), payment_method="UPI"),
+        expense("Zomato", 325.0, "Snacks", now - timedelta(days=3), payment_method="UPI"),
+        expense("Myntra", 2199.0, "Shopping", now - timedelta(days=6), payment_method="Card", account_label="HDFC Credit Card"),
+        expense("Netflix India", 649.0, "Subscriptions", now - timedelta(days=9), payment_method="AutoPay", account_label="Debit Card ****24"),
+        expense("Apollo Pharmacy", 540.0, "Health", now - timedelta(days=12), payment_method="UPI"),
+        expense("Rent - Indiranagar", 22000.0, "Rent", now - timedelta(days=14), payment_method="Bank Transfer", account_label="Axis Savings"),
+        expense("BESCOM", 1860.0, "Bills", now - timedelta(days=18), payment_method="UPI"),
+        expense("JioFiber", 999.0, "Bills", now - timedelta(days=20), payment_method="Card", account_label="ICICI Platinum"),
         Transaction(
             user_id=user.id,
-            description="Salary Deposit - TechFlow Inc.",
+            description="Salary Credit - Bengaluru Studio",
             category="Income",
-            amount=4200.00,
+            amount=96000.0,
             direction="income",
-            payment_method="Direct Deposit",
-            account_label="Checking Account",
+            payment_method="Bank Transfer",
+            account_label="Salary Account",
             status="completed",
             external_reference=f"txn-salary-{int((now - timedelta(days=15)).timestamp())}",
             occurred_at=now - timedelta(days=15),
@@ -96,17 +245,26 @@ def populate_sample_account(session: Session, user: User, *, now: datetime | Non
 
 
 def seed_database(session: Session) -> None:
+    now = datetime.utcnow()
+    demo_user = session.scalar(select(User).where(User.email == DEMO_EMAIL))
+    if demo_user:
+        demo_user.name = "Ananya Rao"
+        demo_user.plan = "Rose Gold"
+        demo_user.avatar_initials = "AR"
+        populate_sample_account(session, demo_user, now=now, replace_existing=True)
+        session.commit()
+        return
+
     existing_user = session.scalar(select(User).limit(1))
     if existing_user:
         return
 
-    now = datetime.utcnow()
     user = User(
-        name="Alex Thompson",
-        email="alex@spedex.app",
-        password_hash=hash_password("spedex123"),
-        plan="Premium Member",
-        avatar_initials="AT",
+        name="Ananya Rao",
+        email=DEMO_EMAIL,
+        password_hash=hash_password(DEMO_PASSWORD),
+        plan="Rose Gold",
+        avatar_initials="AR",
         member_since=now - timedelta(days=420),
     )
     session.add(user)

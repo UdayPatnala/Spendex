@@ -7,68 +7,119 @@ import type {
   BudgetScreenData,
   DashboardOverview,
   Transaction,
+  Vendor,
   VendorDirectoryData,
 } from "./types";
 
 type ViewId = "home" | "payments" | "analytics" | "budget" | "settings";
 type AuthMode = "login" | "signup";
+
 const STORAGE_KEY = "spedex.dashboard.session";
 
 const navItems: Array<{ id: ViewId; label: string; icon: string }> = [
-  { id: "home", label: "Home", icon: "home" },
-  { id: "payments", label: "Payments", icon: "account_balance_wallet" },
-  { id: "analytics", label: "Analytics", icon: "bar_chart" },
-  { id: "budget", label: "Budget", icon: "event_note" },
-  { id: "settings", label: "Settings", icon: "settings" },
+  { id: "home", label: "Overview", icon: "home" },
+  { id: "payments", label: "UPI Desk", icon: "account_balance_wallet" },
+  { id: "analytics", label: "Signals", icon: "bar_chart" },
+  { id: "budget", label: "Budgets", icon: "event_note" },
+  { id: "settings", label: "Profile", icon: "settings" },
 ];
 
+const categoryMeta: Record<string, { emoji: string; icon: string }> = {
+  Snacks: { emoji: "🍿", icon: "restaurant" },
+  Groceries: { emoji: "🛒", icon: "shopping_basket" },
+  Books: { emoji: "📚", icon: "menu_book" },
+  Transport: { emoji: "🚇", icon: "directions_bus" },
+  Bills: { emoji: "💡", icon: "bolt" },
+  Shopping: { emoji: "🛍️", icon: "shopping_bag" },
+  Health: { emoji: "💊", icon: "fitness_center" },
+  Rent: { emoji: "🏠", icon: "home_work" },
+  Subscriptions: { emoji: "📲", icon: "cloud" },
+  Income: { emoji: "💰", icon: "payments" },
+};
+
 function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+  }).format(amount);
 }
 
 function formatDate(isoDate: string) {
-  return new Date(isoDate).toLocaleDateString("en-US", {
+  return new Date(isoDate).toLocaleDateString("en-IN", {
     month: "short",
-    day: "2-digit",
+    day: "numeric",
   });
 }
 
 function formatTime(isoDate: string) {
-  return new Date(isoDate).toLocaleTimeString("en-US", {
+  return new Date(isoDate).toLocaleTimeString("en-IN", {
     hour: "numeric",
     minute: "2-digit",
   });
+}
+
+function monthYear(isoDate: string) {
+  return new Date(isoDate).toLocaleDateString("en-IN", {
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function categoryEmoji(category: string) {
+  return categoryMeta[category]?.emoji ?? "✨";
+}
+
+function categoryLabel(category: string) {
+  return `${categoryEmoji(category)} ${category}`;
 }
 
 function iconFor(name: string) {
   const map: Record<string, string> = {
     coffee: "local_cafe",
     subway: "subway",
-    print: "print",
+    menu_book: "menu_book",
     restaurant: "restaurant",
     shopping_basket: "shopping_basket",
     directions_car: "directions_car",
+    directions_bus: "directions_bus",
     bolt: "bolt",
     wifi: "wifi",
     cloud: "cloud",
     home_work: "home_work",
     fitness_center: "fitness_center",
-    bakery_dining: "bakery_dining",
-    directions_bus: "directions_bus",
     shopping_bag: "shopping_bag",
     event_busy: "event_busy",
+    insights: "insights",
+    payments: "payments",
   };
   return map[name] ?? "payments";
 }
 
 function accentClass(accent: string) {
   const map: Record<string, string> = {
+    rose: "accent-rose",
     mint: "accent-mint",
     amber: "accent-amber",
     lavender: "accent-lavender",
-    indigo: "accent-indigo",
   };
-  return map[accent] ?? "accent-indigo";
+  return map[accent] ?? "accent-rose";
+}
+
+function clampPercent(value: number) {
+  return Math.max(0, Math.min(value, 1)) * 100;
+}
+
+function BrandLockup({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`brand-lockup ${compact ? "compact" : ""}`}>
+      <img className="brand-mark-image" src="/spedex-mark.svg" alt="Spedex logo" />
+      <div className="brand-copy">
+        <h1>Spedex</h1>
+        <p>Rose Gold Money Index</p>
+      </div>
+    </div>
+  );
 }
 
 function Sidebar({
@@ -80,14 +131,12 @@ function Sidebar({
 }) {
   return (
     <aside className="sidebar">
-      <div className="brand-lockup">
-        <div className="brand-mark">
-          <span className="material-symbols-outlined">account_balance</span>
-        </div>
-        <div className="brand-copy">
-          <h1>Spedex</h1>
-          <p>Speed + Spending Index</p>
-        </div>
+      <BrandLockup />
+
+      <div className="sidebar-panel">
+        <p className="eyebrow">Workspace</p>
+        <strong>Premium India Desk</strong>
+        <span className="subtle">UPI-ready payments, budget signals, and soft pink clarity.</span>
       </div>
 
       <nav className="sidebar-nav">
@@ -105,7 +154,7 @@ function Sidebar({
       </nav>
 
       <button className="sidebar-cta" type="button">
-        + Send Payment
+        Start UPI Payment
       </button>
     </aside>
   );
@@ -124,20 +173,22 @@ function Topbar({
 }) {
   return (
     <header className="topbar">
-      <div className="searchbar">
-        <span className="material-symbols-outlined">search</span>
-        <input
-          aria-label="Search transactions"
-          placeholder="Search transactions, bills, or reports..."
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-        />
+      <div className="topbar-main">
+        <BrandLockup compact />
+        <div className="searchbar">
+          <span className="material-symbols-outlined">search</span>
+          <input
+            aria-label="Search transactions"
+            placeholder="Search payees, reminders, categories, or accounts..."
+            value={query}
+            onChange={(event) => onQueryChange(event.target.value)}
+          />
+        </div>
       </div>
 
       <div className="topbar-actions">
-        <span className="material-symbols-outlined">notifications</span>
-        <span className="material-symbols-outlined">shield</span>
-        <span className="material-symbols-outlined">help</span>
+        <span className="status-chip">UPI Ready</span>
+        <span className="status-chip soft">Member since {monthYear(overview.user.member_since)}</span>
         <button className="signout-button" type="button" onClick={onSignOut}>
           Sign out
         </button>
@@ -181,25 +232,16 @@ function AuthView({
   return (
     <main className="auth-shell">
       <section className="auth-card">
-        <div className="brand-lockup">
-          <div className="brand-mark">
-            <span className="material-symbols-outlined">account_balance</span>
-          </div>
-          <div className="brand-copy">
-            <h1>Spedex</h1>
-            <p>Speed + Spending Index</p>
-          </div>
+        <BrandLockup />
+        <div className="auth-hero">
+          <p className="eyebrow">Rose Gold Access</p>
+          <h2 className="page-title">
+            {mode === "login" ? "Sign in to your premium rupee desk" : "Open a new Spedex workspace"}
+          </h2>
+          <p className="subtle">
+            Track UPI payments, keep weekend spends in control, and surface category signals with a calmer premium UI.
+          </p>
         </div>
-
-        <p className="eyebrow">Session Access</p>
-        <h2 className="page-title">
-          {mode === "login" ? "Sign in to your Spedex workspace" : "Create a new Spedex account"}
-        </h2>
-        <p className="subtle">
-          {mode === "login"
-            ? "Use the seeded demo credentials or sign in with your own account."
-            : "New accounts get a starter budget, payees, reminders, and analytics data."}
-        </p>
 
         <div className="auth-toggle">
           <button
@@ -235,9 +277,25 @@ function AuthView({
           </button>
         </div>
 
-        <p className="subtle">Demo credentials: `alex@spedex.app` / `spedex123`</p>
+        <div className="auth-footer-note">
+          <span className="status-chip">Demo</span>
+          <span>`ananya@spedex.app` / `spedex123`</span>
+        </div>
       </section>
     </main>
+  );
+}
+
+function QuickPayCard({ vendor }: { vendor: Vendor }) {
+  return (
+    <button className="quick-pay-card" type="button">
+      <div className={`icon-badge ${accentClass(vendor.accent)}`}>
+        <span className="emoji-glyph">{categoryEmoji(vendor.category)}</span>
+      </div>
+      <strong>{vendor.name}</strong>
+      <span className="subtle">{categoryLabel(vendor.category)}</span>
+      <span className="amount-pill">{formatCurrency(vendor.default_amount)}</span>
+    </button>
   );
 }
 
@@ -252,24 +310,44 @@ function HomeView({
 
   return (
     <div className="dashboard-grid">
+      <section className="hero-panel full-width">
+        <div>
+          <p className="eyebrow">Rose Gold Desk</p>
+          <h2 className="page-title hero-title">Track every rupee with softer edges and sharper signals.</h2>
+          <p className="hero-copy">
+            Spedex keeps your quick UPI payees, premium budget pacing, and high-value reminders in one calm surface.
+          </p>
+        </div>
+        <div className="hero-metrics">
+          <div>
+            <span className="metric-label">Monthly outflow</span>
+            <strong>{formatCurrency(overview.monthly_total)}</strong>
+          </div>
+          <div>
+            <span className="metric-label">Weekly average</span>
+            <strong>{formatCurrency(overview.weekly_average)}</strong>
+          </div>
+        </div>
+      </section>
+
       <div className="left-column">
         <div className="kpi-strip">
-          <section className="card">
-            <p className="eyebrow">Daily Outlook</p>
+          <section className="card spotlight-card">
+            <p className="eyebrow">Monthly Index</p>
             <h2 className="headline">{formatCurrency(overview.monthly_total)}</h2>
-            <p className="subtle">Total spending this month</p>
+            <p className="subtle">Live expense total across your current monthly cycle.</p>
           </section>
 
           <section className="card">
             <div className="section-header">
               <div>
-                <p className="eyebrow">Monthly Budget</p>
+                <p className="eyebrow">Budget Pace</p>
                 <strong>{Math.round(overview.budget_used_ratio * 100)}% used</strong>
               </div>
               <strong>{formatCurrency(overview.monthly_budget)}</strong>
             </div>
             <div className="budget-bar">
-              <span style={{ width: `${overview.budget_used_ratio * 100}%` }} />
+              <span style={{ width: `${clampPercent(overview.budget_used_ratio)}%` }} />
             </div>
             <p className="subtle">{overview.budget_copy}</p>
           </section>
@@ -277,51 +355,44 @@ function HomeView({
 
         <section className="card">
           <div className="section-header">
-            <h3 className="page-title">Quick Pay</h3>
-            <button className="calendar-pill" type="button">
-              Manage Payees
-            </button>
+            <h3 className="page-title section-title">Quick Pay</h3>
+            <span className="status-chip soft">3 favourites</span>
           </div>
           <div className="quick-grid">
             {overview.quick_pay.map((vendor) => (
-              <button key={vendor.id} className="quick-pay-card" type="button">
-                <div className={`icon-badge ${accentClass(vendor.accent)}`}>
-                  <span className="material-symbols-outlined">{iconFor(vendor.icon)}</span>
-                </div>
-                <strong>{vendor.name}</strong>
-                <span className="subtle">{formatCurrency(vendor.default_amount)}</span>
-              </button>
+              <QuickPayCard key={vendor.id} vendor={vendor} />
             ))}
             <button className="quick-pay-card add" type="button">
-              <div className="icon-badge accent-indigo">
+              <div className="icon-badge accent-lavender">
                 <span className="material-symbols-outlined">add</span>
               </div>
-              <strong>New</strong>
-              <span className="subtle">Quick link</span>
+              <strong>Add payee</strong>
+              <span className="subtle">Store a new UPI favourite</span>
             </button>
           </div>
         </section>
 
         <section className="card">
           <div className="transactions-header">
-            <h3 className="page-title">Recent Transactions</h3>
-            <span className="subtle">Download CSV</span>
+            <h3 className="page-title section-title">Recent Transactions</h3>
+            <span className="status-chip soft">Filtered live</span>
           </div>
           <div className="transactions-list">
             {filteredTransactions.map((transaction) => (
               <div key={transaction.id} className="transaction-row">
-                <div className={`icon-badge ${transaction.direction === "income" ? "accent-mint" : "accent-indigo"}`}>
-                  <span className="material-symbols-outlined">
-                    {transaction.direction === "income" ? "payments" : "shopping_bag"}
+                <div className={`icon-badge ${transaction.direction === "income" ? "accent-mint" : "accent-rose"}`}>
+                  <span className="emoji-glyph">
+                    {transaction.direction === "income" ? categoryEmoji("Income") : categoryEmoji(transaction.category)}
                   </span>
                 </div>
                 <div>
                   <p className="transaction-title">{transaction.description}</p>
                   <span className="subtle">
-                    {formatDate(transaction.occurred_at)} | {formatTime(transaction.occurred_at)} | {transaction.category}
+                    {formatDate(transaction.occurred_at)} | {formatTime(transaction.occurred_at)} |{" "}
+                    {categoryLabel(transaction.category)}
                   </span>
                 </div>
-                <strong style={{ color: transaction.direction === "income" ? "#0a7b47" : "#c72e2e" }}>
+                <strong className={transaction.direction === "income" ? "amount-positive" : "amount-negative"}>
                   {transaction.direction === "income" ? "+" : "-"}
                   {formatCurrency(transaction.amount)}
                 </strong>
@@ -334,10 +405,8 @@ function HomeView({
       <div className="right-column">
         <section className="card weekly-panel">
           <div className="section-header">
-            <p className="eyebrow" style={{ color: "rgba(255,255,255,0.72)" }}>
-              Weekly Spending
-            </p>
-            <span className="muted-chip">Rolling 4-week view</span>
+            <p className="eyebrow light">Weekly Spending</p>
+            <span className="status-chip inverse">Rolling 4 weeks</span>
           </div>
           <div className="weekly-bars">
             {overview.weekly_spending.map((value, index) => (
@@ -350,30 +419,26 @@ function HomeView({
           </div>
           <div className="section-header">
             <div>
-              <p className="subtle" style={{ color: "rgba(255,255,255,0.72)" }}>
-                Peak Day
-              </p>
+              <p className="subtle light">Peak day</p>
               <strong>{overview.peak_day_label}</strong>
             </div>
             <div>
-              <p className="subtle" style={{ color: "rgba(255,255,255,0.72)" }}>
-                Weekly Avg
-              </p>
-              <strong>{formatCurrency(overview.weekly_average)}</strong>
+              <p className="subtle light">Security</p>
+              <strong>UPI Protected</strong>
             </div>
           </div>
         </section>
 
         <section className="card">
           <div className="section-header">
-            <h3 className="page-title">Upcoming Reminders</h3>
-            <span className="subtle">View Full Calendar</span>
+            <h3 className="page-title section-title">Upcoming Reminders</h3>
+            <span className="status-chip soft">AutoPay aware</span>
           </div>
           <div className="reminders-list">
             {overview.reminders.map((reminder) => (
               <div key={reminder.id} className="reminder-row">
-                <div className="icon-badge accent-indigo">
-                  <span className="material-symbols-outlined">calendar_month</span>
+                <div className="icon-badge accent-lavender">
+                  <span className="emoji-glyph">📅</span>
                 </div>
                 <div>
                   <p className="reminder-title">{reminder.title}</p>
@@ -389,7 +454,7 @@ function HomeView({
 
         <section className="card security-card">
           <div className="section-header">
-            <span className="material-symbols-outlined">shield</span>
+            <span className="material-symbols-outlined">shield_locked</span>
             <strong>Security Update</strong>
           </div>
           <p>{overview.security_message}</p>
@@ -405,30 +470,31 @@ function PaymentsView({ vendors }: { vendors: VendorDirectoryData }) {
       <section className="card">
         <div className="section-header">
           <div>
-            <p className="eyebrow">Manage Directory</p>
-            <h2 className="page-title">Vendors</h2>
+            <p className="eyebrow">UPI Directory</p>
+            <h2 className="page-title section-title">Payees</h2>
           </div>
-          <button className="calendar-pill" type="button">
-            Add New Vendor
-          </button>
+          <span className="status-chip">India-first</span>
         </div>
 
         <div className="vendors-list">
           {Object.entries(vendors.groups).map(([groupName, groupVendors]) => (
             <div key={groupName} className="full-width">
               <div className="section-header">
-                <p className="eyebrow">{groupName}</p>
+                <p className="eyebrow">{categoryLabel(groupName)}</p>
               </div>
               {groupVendors.map((vendor) => (
                 <div key={vendor.id} className="vendor-row">
                   <div className={`icon-badge ${accentClass(vendor.accent)}`}>
-                    <span className="material-symbols-outlined">{iconFor(vendor.icon)}</span>
+                    <span className="emoji-glyph">{categoryEmoji(vendor.category)}</span>
                   </div>
                   <div>
                     <p className="vendor-title">{vendor.name}</p>
                     <span className="subtle">{vendor.upi_handle}</span>
                   </div>
-                  <strong>{formatCurrency(vendor.default_amount)}</strong>
+                  <div className="vendor-meta">
+                    <strong>{formatCurrency(vendor.default_amount)}</strong>
+                    <span className="status-chip soft">{categoryLabel(vendor.category)}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -447,29 +513,27 @@ function AnalyticsView({ analytics }: { analytics: AnalyticsData }) {
       <section className="card">
         <div className="section-header">
           <div>
-            <p className="eyebrow">Monthly Insights</p>
-            <h2 className="page-title">Spending Shape</h2>
+            <p className="eyebrow">Signals</p>
+            <h2 className="page-title section-title">Monthly Shape</h2>
           </div>
-          <span className="muted-chip">Current Month</span>
+          <span className="status-chip">Current cycle</span>
         </div>
         <div className="analytics-grid">
           <div className="hero-ring">
             <div className="donut" />
             <div className="donut-content">
-              <p className="eyebrow">Total Spent</p>
-              <h3 className="headline">{formatCurrency(analytics.total_spent)}</h3>
+              <p className="eyebrow">Total spent</p>
+              <h3 className="headline donut-value">{formatCurrency(analytics.total_spent)}</h3>
             </div>
           </div>
-          <div className="card" style={{ background: "var(--surface-low)" }}>
-            <p className="eyebrow">Smart Insight</p>
-            <h3 className="headline" style={{ fontSize: "2rem" }}>
-              {analytics.smart_insight}
-            </h3>
+          <div className="soft-panel">
+            <p className="eyebrow">Smart insight</p>
+            <h3 className="headline panel-copy">{analytics.smart_insight}</h3>
           </div>
-          <div className="full-width card" style={{ background: "var(--surface-low)" }}>
+          <div className="full-width soft-panel">
             <div className="section-header">
-              <h3 className="page-title">Weekly Spend</h3>
-              <span className="muted-chip">Week 4 Active</span>
+              <h3 className="page-title section-title">Weekly Spend</h3>
+              <span className="status-chip soft">Week 4 active</span>
             </div>
             <div className="analytics-bars">
               {analytics.weekly_spend.map((week) => (
@@ -480,23 +544,16 @@ function AnalyticsView({ analytics }: { analytics: AnalyticsData }) {
               ))}
             </div>
           </div>
-          <div className="card">
-            <p className="eyebrow">Highest Sector</p>
-            <h3 className="headline" style={{ fontSize: "2rem" }}>
-              {analytics.highest_sector.title}
-            </h3>
-            <p className="subtle">{analytics.highest_sector.subtitle}</p>
-          </div>
-          <div className="card">
-            <p className="eyebrow">Busiest Day</p>
-            <h3 className="headline" style={{ fontSize: "2rem" }}>
-              {analytics.busiest_day.title}
-            </h3>
-            <p className="subtle">{analytics.busiest_day.subtitle}</p>
-          </div>
-          <div className="full-width card">
+          {[analytics.highest_sector, analytics.busiest_day].map((card) => (
+            <div className="soft-panel" key={card.title}>
+              <p className="eyebrow">{card.title === analytics.highest_sector.title ? "Highest sector" : "Peak day"}</p>
+              <h3 className="headline panel-copy compact">{card.title}</h3>
+              <p className="subtle">{card.subtitle}</p>
+            </div>
+          ))}
+          <div className="full-width card category-panel">
             <div className="section-header">
-              <h3 className="page-title">Category Breakdown</h3>
+              <h3 className="page-title section-title">Category Breakdown</h3>
               <span className="subtle">
                 {analytics.weekday_ratio}% weekday / {analytics.weekend_ratio}% weekend
               </span>
@@ -505,10 +562,10 @@ function AnalyticsView({ analytics }: { analytics: AnalyticsData }) {
               {analytics.category_breakdown.map((item) => (
                 <div key={item.category} className="transaction-row">
                   <div className={`icon-badge ${accentClass(item.accent)}`}>
-                    <span className="material-symbols-outlined">pie_chart</span>
+                    <span className="emoji-glyph">{categoryEmoji(item.category)}</span>
                   </div>
                   <div>
-                    <p className="transaction-title">{item.category}</p>
+                    <p className="transaction-title">{categoryLabel(item.category)}</p>
                     <div className="mini-progress">
                       <span style={{ width: `${item.percentage}%` }} />
                     </div>
@@ -530,11 +587,11 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
       <section className="card">
         <div className="section-header">
           <div>
-            <p className="eyebrow">Current Planning</p>
-            <h2 className="page-title">Weekly Index</h2>
+            <p className="eyebrow">Planning</p>
+            <h2 className="page-title section-title">Budget Map</h2>
           </div>
           <div>
-            <p className="eyebrow">Remaining Budget</p>
+            <p className="eyebrow">Remaining budget</p>
             <strong>{formatCurrency(budget.remaining_budget)}</strong>
           </div>
         </div>
@@ -542,15 +599,15 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
           {budget.budgets.map((item) => (
             <div key={item.id} className="budget-card">
               <div className={`icon-badge ${accentClass(item.accent)}`}>
-                <span className="material-symbols-outlined">{iconFor(item.icon)}</span>
+                <span className="emoji-glyph">{categoryEmoji(item.category)}</span>
               </div>
               <div>
-                <p className="transaction-title">{item.category}</p>
+                <p className="transaction-title">{categoryLabel(item.category)}</p>
                 <p className="subtle">
                   {formatCurrency(item.spent)} / {formatCurrency(item.limit_amount)}
                 </p>
                 <div className="progress-line">
-                  <span style={{ width: `${item.progress * 100}%` }} />
+                  <span style={{ width: `${clampPercent(item.progress)}%` }} />
                 </div>
               </div>
               <strong>{Math.round(item.progress * 100)}%</strong>
@@ -561,16 +618,14 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
 
       <section className="card">
         <div className="section-header">
-          <h2 className="page-title">Upcoming Reminders</h2>
-          <button className="calendar-pill" type="button">
-            View Calendar
-          </button>
+          <h2 className="page-title section-title">Upcoming Reminders</h2>
+          <span className="status-chip soft">Calendar linked</span>
         </div>
         <div className="reminders-list">
           {budget.reminders.map((reminder) => (
             <div key={reminder.id} className="reminder-row">
-              <div className="icon-badge accent-indigo">
-                <span className="material-symbols-outlined">event</span>
+              <div className="icon-badge accent-lavender">
+                <span className="emoji-glyph">⏰</span>
               </div>
               <div>
                 <p className="reminder-title">{reminder.title}</p>
@@ -585,12 +640,8 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
       </section>
 
       <section className="card weekly-panel">
-        <p className="eyebrow" style={{ color: "rgba(255,255,255,0.72)" }}>
-          Proactive Saving Tip
-        </p>
-        <h3 className="headline" style={{ color: "white", fontSize: "2rem" }}>
-          Spend with more breathing room
-        </h3>
+        <p className="eyebrow light">Saving Tip</p>
+        <h3 className="headline white-copy">Protect more breathing room</h3>
         <p>{budget.savings_tip}</p>
       </section>
     </div>
@@ -604,7 +655,7 @@ function SettingsView({ overview }: { overview: DashboardOverview }) {
         <div className="section-header">
           <div>
             <p className="eyebrow">Identity</p>
-            <h2 className="page-title">Profile</h2>
+            <h2 className="page-title section-title">Profile</h2>
           </div>
           <div className="profile-chip">
             <div className="profile-meta">
@@ -616,19 +667,19 @@ function SettingsView({ overview }: { overview: DashboardOverview }) {
         </div>
         <div className="settings-list">
           {[
-            ["Smart Notifications", "Receive reminder and payment alerts."],
-            ["Biometric Lock", "Use Face ID or fingerprint for fast entry."],
-            ["Weekly Digest", "Get a summary every Monday morning."],
+            ["Payment alerts", "Get a nudge for every large transfer or AutoPay reminder."],
+            ["Device lock", "Use biometrics before sensitive UPI or bank actions."],
+            ["Weekly digest", "Receive a soft snapshot of spend, trends, and buffers."],
           ].map(([title, subtitle]) => (
             <div key={title} className="setting-row">
-              <div className="icon-badge accent-indigo">
-                <span className="material-symbols-outlined">tune</span>
+              <div className="icon-badge accent-rose">
+                <span className="emoji-glyph">✨</span>
               </div>
               <div>
                 <p className="setting-title">{title}</p>
                 <span className="subtle">{subtitle}</span>
               </div>
-              <span className="muted-chip">Enabled</span>
+              <span className="status-chip">Enabled</span>
             </div>
           ))}
         </div>
@@ -661,7 +712,7 @@ export default function App() {
   const [sessionUser, setSessionUser] = useState<DashboardOverview["user"] | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authName, setAuthName] = useState("");
-  const [authEmail, setAuthEmail] = useState("alex@spedex.app");
+  const [authEmail, setAuthEmail] = useState("ananya@spedex.app");
   const [authPassword, setAuthPassword] = useState("spedex123");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSubmitting, setAuthSubmitting] = useState(false);
@@ -704,7 +755,7 @@ export default function App() {
       }
     }
 
-    restoreSession();
+    void restoreSession();
 
     return () => {
       mounted = false;
@@ -718,7 +769,7 @@ export default function App() {
 
     let mounted = true;
 
-    loadDashboardBundle()
+    void loadDashboardBundle()
       .then((bundle) => {
         if (!mounted) {
           return;
@@ -782,6 +833,7 @@ export default function App() {
     return (
       <main className="auth-shell">
         <section className="auth-card">
+          <BrandLockup />
           <p className="eyebrow">Loading</p>
           <h2 className="page-title">Restoring your Spedex session</h2>
         </section>
