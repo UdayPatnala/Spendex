@@ -25,9 +25,9 @@ const navItems: Array<{ id: ViewId; label: string; icon: string }> = [
 ];
 
 const categoryMeta: Record<string, { emoji: string; icon: string }> = {
-  Snacks: { emoji: "🍿", icon: "restaurant" },
+  Dining: { emoji: "🍴", icon: "restaurant" },
   Groceries: { emoji: "🛒", icon: "shopping_basket" },
-  Books: { emoji: "📚", icon: "menu_book" },
+  Miscellaneous: { emoji: "✨", icon: "payments" },
   Transport: { emoji: "🚇", icon: "directions_bus" },
   Bills: { emoji: "💡", icon: "bolt" },
   Shopping: { emoji: "🛍️", icon: "shopping_bag" },
@@ -116,7 +116,7 @@ function BrandLockup({ compact = false }: { compact?: boolean }) {
       <img className="brand-mark-image" src="/spedex-mark.svg" alt="Spedex logo" />
       <div className="brand-copy">
         <h1>Spedex</h1>
-        <p>Campus Wallet</p>
+        <p>Smart Wallet</p>
       </div>
     </div>
   );
@@ -135,8 +135,8 @@ function Sidebar({
 
       <div className="sidebar-panel">
         <p className="eyebrow">Workspace</p>
-        <strong>Student Wallet</strong>
-        <span className="subtle">1-tap hostel payments, allowance limits, and campus analytics.</span>
+        <strong>Personal Wallet</strong>
+        <span className="subtle">1-tap utility payments, smart budgeting, and financial analytics.</span>
       </div>
 
       <nav className="sidebar-nav">
@@ -234,12 +234,12 @@ function AuthView({
       <section className="auth-card">
         <BrandLockup />
         <div className="auth-hero">
-          <p className="eyebrow">Student Portal</p>
+          <p className="eyebrow">User Portal</p>
           <h2 className="page-title">
-            {mode === "login" ? "Sign in to your campus wallet" : "Open a new student workspace"}
+            {mode === "login" ? "Sign in to your personal wallet" : "Create your smart workspace"}
           </h2>
           <p className="subtle">
-            Track mess fees, xerox bills, and your monthly allowance seamlessly with 1-tap payment routers.
+            Track your subscriptions, utility bills, and daily expenses seamlessly with 1-tap payment routers.
           </p>
         </div>
 
@@ -309,15 +309,15 @@ function HomeView({
     <div className="dashboard-grid">
       <section className="hero-panel full-width">
         <div>
-          <p className="eyebrow">Campus Wallet</p>
-          <h2 className="page-title hero-title">Don't lose track of your allowance over small taps.</h2>
+          <p className="eyebrow">Smart Wallet</p>
+          <h2 className="page-title hero-title">Take control of your spending, one tap at a time.</h2>
           <p className="hero-copy">
-            Spedex locks your daily college vendors, hostel rent reminders, and tight monthly pacing into a single tap interface.
+            Spedex connects your frequent payees, monthly rent reminders, and spending trends into a single tap interface.
           </p>
         </div>
         <div className="hero-metrics">
           <div>
-            <span className="metric-label">Monthly outflow</span>
+            <span className="metric-label">Monthly spending</span>
             <strong>{formatCurrency(overview.monthly_total)}</strong>
           </div>
           <div>
@@ -330,7 +330,7 @@ function HomeView({
       <div className="left-column">
         <div className="kpi-strip">
           <section className="card spotlight-card">
-            <p className="eyebrow">Monthly Index</p>
+            <p className="eyebrow">Monthly Spending</p>
             <h2 className="headline">{formatCurrency(overview.monthly_total)}</h2>
             <p className="subtle">Live expense total across your current monthly cycle.</p>
           </section>
@@ -900,7 +900,7 @@ export default function App() {
         <section className="auth-card" style={{ textAlign: "center" }}>
           <BrandLockup />
           <p className="eyebrow">Loading</p>
-          <h2 className="page-title">Preparing your campus workspace…</h2>
+          <h2 className="page-title">Preparing your smart workspace…</h2>
         </section>
       </main>
     );

@@ -26,7 +26,7 @@ export function SettingsScreen() {
     biometric: true,
     digest: true,
   });
-  const profile = user ?? { name: "Student", email: "", avatar_initials: "S", plan: "Free" };
+  const profile = user ?? { name: "User", email: "", avatar_initials: "U", plan: "Free" };
 
   return (
     <SafeAreaView style={styles.safeArea}>

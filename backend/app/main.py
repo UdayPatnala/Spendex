@@ -178,15 +178,15 @@ def build_weekly_spend(transactions: list[Transaction]) -> list[WeeklySpendPoint
 def build_category_breakdown(transactions: list[Transaction]) -> list[CategoryBreakdown]:
     totals = defaultdict(float)
     accent_map = {
-        "Snacks": "rose",
+        "Dining": "rose",
         "Groceries": "mint",
-        "Books": "lavender",
+        "Shopping": "lavender",
         "Transport": "amber",
         "Bills": "amber",
         "Subscriptions": "lavender",
         "Rent": "rose",
-        "Shopping": "rose",
         "Health": "mint",
+        "Miscellaneous": "lavender",
     }
     for txn in transactions:
         totals[txn.category] += txn.amount
@@ -230,15 +230,15 @@ def build_highest_sector(category_breakdown: list[CategoryBreakdown]) -> Highlig
 
     top = category_breakdown[0]
     icon_map = {
-        "Snacks": "restaurant",
+        "Dining": "restaurant",
         "Groceries": "shopping_basket",
-        "Books": "menu_book",
+        "Shopping": "shopping_bag",
         "Transport": "directions_bus",
         "Bills": "bolt",
-        "Shopping": "shopping_bag",
-        "Health": "fitness_center",
         "Rent": "home_work",
         "Subscriptions": "cloud",
+        "Health": "fitness_center",
+        "Miscellaneous": "payments",
     }
     return HighlightCard(
         title=top.category,
@@ -276,7 +276,7 @@ def build_smart_insight(
     weekend_ratio: float,
 ) -> str:
     if not category_breakdown:
-        return "Your first few payments will unlock richer spending signals here."
+        return "Start tracking your expenses to unlock personalized spending insights here."
 
     top_category = category_breakdown[0]
     if weekend_ratio > weekday_ratio:
