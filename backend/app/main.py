@@ -33,7 +33,7 @@ from .schemas import (
     WeeklySpendPoint,
 )
 from .security import create_access_token, decode_access_token, hash_password, verify_password
-from .seed import populate_sample_account, seed_database
+from .seed import populate_sample_account
 
 app = FastAPI(title=settings.app_name)
 
@@ -49,25 +49,10 @@ app.add_middleware(
 @app.on_event("startup")
 def startup() -> None:
     Base.metadata.create_all(bind=engine)
-    if settings.seed_demo:
-        session = SessionLocal()
-        try:
-            seed_database(session)
-        finally:
-            session.close()
-
-
-def get_demo_user(session: Session) -> User:
-    user = session.scalar(select(User).order_by(User.id))
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No demo user found")
-    return user
 
 
 def get_user_from_authorization(session: Session, authorization: str | None) -> User:
     if not authorization:
-        if settings.allow_demo_auth_fallback:
-            return get_demo_user(session)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
 
     scheme, _, token = authorization.partition(" ")

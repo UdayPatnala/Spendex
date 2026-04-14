@@ -1,4 +1,5 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useState } from "react";
+import QRCode from "react-qr-code";
 
 import { getCurrentUser, loadDashboardBundle, login, setAuthToken, signUp } from "./api";
 import { mockAnalytics, mockBudget, mockOverview, mockVendors } from "./mockData";
@@ -153,9 +154,9 @@ function Sidebar({
         ))}
       </nav>
 
-      <button className="sidebar-cta" type="button">
-        Start UPI Payment
-      </button>
+      <a href="https://spe-dex.vercel.app/spedex.apk" className="sidebar-cta" style={{ textDecoration: 'none', textAlign: 'center' }}>
+        Download Mobile APK
+      </a>
     </aside>
   );
 }
@@ -277,10 +278,7 @@ function AuthView({
           </button>
         </div>
 
-        <div className="auth-footer-note">
-          <span className="status-chip">Demo</span>
-          <span>`ananya@spedex.app` / `spedex123`</span>
-        </div>
+
       </section>
     </main>
   );
@@ -465,8 +463,22 @@ function HomeView({
 }
 
 function PaymentsView({ vendors }: { vendors: VendorDirectoryData }) {
+  const [activeVendor, setActiveVendor] = useState<Vendor | null>(null);
+
   return (
     <div className="payments-shell">
+      {activeVendor && (
+        <div className="modal-overlay" onClick={() => setActiveVendor(null)}>
+          <div className="qr-modal-card" onClick={e => e.stopPropagation()}>
+            <h3>Pay {activeVendor.name}</h3>
+            <p className="subtle">{activeVendor.upi_handle}</p>
+            <div style={{ background: 'white', padding: '16px', borderRadius: '8px', margin: '24px 0' }}>
+              <QRCode value={`upi://pay?pa=${activeVendor.upi_handle}&pn=${activeVendor.name}&cu=INR`} size={200} />
+            </div>
+            <button className="auth-submit" onClick={() => setActiveVendor(null)}>Close</button>
+          </div>
+        </div>
+      )}
       <section className="card">
         <div className="section-header">
           <div>
@@ -483,7 +495,12 @@ function PaymentsView({ vendors }: { vendors: VendorDirectoryData }) {
                 <p className="eyebrow">{categoryLabel(groupName)}</p>
               </div>
               {groupVendors.map((vendor) => (
-                <div key={vendor.id} className="vendor-row">
+                <div 
+                  key={vendor.id} 
+                  className="vendor-row" 
+                  onClick={() => setActiveVendor(vendor)}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className={`icon-badge ${accentClass(vendor.accent)}`}>
                     <span className="emoji-glyph">{categoryEmoji(vendor.category)}</span>
                   </div>
@@ -712,8 +729,8 @@ export default function App() {
   const [sessionUser, setSessionUser] = useState<DashboardOverview["user"] | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authName, setAuthName] = useState("");
-  const [authEmail, setAuthEmail] = useState("ananya@spedex.app");
-  const [authPassword, setAuthPassword] = useState("spedex123");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSubmitting, setAuthSubmitting] = useState(false);
 

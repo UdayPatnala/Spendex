@@ -244,31 +244,3 @@ def populate_sample_account(
     session.add_all(transactions)
 
 
-def seed_database(session: Session) -> None:
-    now = datetime.utcnow()
-    demo_user = session.scalar(select(User).where(User.email == DEMO_EMAIL))
-    if demo_user:
-        demo_user.name = "Alex"
-        demo_user.plan = "Rose Gold"
-        demo_user.avatar_initials = "AL"
-        populate_sample_account(session, demo_user, now=now, replace_existing=True)
-        session.commit()
-        return
-
-    existing_user = session.scalar(select(User).limit(1))
-    if existing_user:
-        return
-
-    user = User(
-        name="Alex",
-        email=DEMO_EMAIL,
-        password_hash=hash_password(DEMO_PASSWORD),
-        plan="Rose Gold",
-        avatar_initials="AL",
-        member_since=now - timedelta(days=420),
-    )
-    session.add(user)
-    session.flush()
-
-    populate_sample_account(session, user, now=now)
-    session.commit()

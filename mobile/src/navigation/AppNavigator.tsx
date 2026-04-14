@@ -2,6 +2,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, SafeAreaView, StyleSheet, Text } from "react-native";
+import * as LocalAuthentication from "expo-local-authentication";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "../auth/AuthProvider";
 import { AnalyticsScreen } from "../screens/AnalyticsScreen";
@@ -100,12 +102,31 @@ function MainTabs() {
 
 export function AppNavigator() {
   const { ready, user } = useAuth();
+  const [isUnlocked, setIsUnlocked] = useState(false);
 
-  if (!ready) {
+  useEffect(() => {
+    if (user && !isUnlocked) {
+      LocalAuthentication.hasHardwareAsync().then((hasHardware) => {
+        if (!hasHardware) {
+          setIsUnlocked(true);
+          return;
+        }
+        LocalAuthentication.authenticateAsync({
+          promptMessage: "Unlock Spedex Area",
+        }).then((result) => {
+          if (result.success) {
+            setIsUnlocked(true);
+          }
+        });
+      });
+    }
+  }, [user, isUnlocked]);
+
+  if (!ready || (user && !isUnlocked)) {
     return (
       <SafeAreaView style={styles.loadingScreen}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Restoring your Spedex session...</Text>
+        <Text style={styles.loadingText}>{!ready ? "Restoring your Spedex session..." : "Unlock Spedex to continue"}</Text>
       </SafeAreaView>
     );
   }

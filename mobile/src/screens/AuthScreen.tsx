@@ -18,8 +18,8 @@ export function AuthScreen() {
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<AuthMode>("login");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("alex@spedex.app");
-  const [password, setPassword] = useState("spedex123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -111,9 +111,7 @@ export function AuthScreen() {
           )}
         </Pressable>
 
-        <Text style={styles.helper}>
-          Demo login is prefilled with `alex@spedex.app` / `spedex123`.
-        </Text>
+
       </View>
     </SafeAreaView>
   );
