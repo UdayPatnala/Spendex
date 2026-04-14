@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import type {
   AnalyticsData,
@@ -27,10 +28,23 @@ export function setAuthToken(token: string | null) {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  let token = authToken;
+  if (!token) {
+    try {
+      const raw = await AsyncStorage.getItem("spedex.mobile.session");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        token = parsed.token || null;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       "Content-Type": "application/json",
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init?.headers ?? {}),
     },
     ...init,

@@ -32,10 +32,23 @@ export function setAuthToken(token: string | null) {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  let token = authToken;
+  if (!token && typeof window !== "undefined") {
+    try {
+      const stored = window.localStorage.getItem("spedex.dashboard.session");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        token = parsed.token || null;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       "Content-Type": "application/json",
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init?.headers ?? {}),
     },
     ...init,
