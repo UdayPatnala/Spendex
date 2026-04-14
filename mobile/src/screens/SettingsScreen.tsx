@@ -11,7 +11,6 @@ import {
 } from "react-native";
 
 import { useAuth } from "../auth/AuthProvider";
-import { mockHomeOverview } from "../api/mockData";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
 
 const settingRows = [
@@ -27,7 +26,7 @@ export function SettingsScreen() {
     biometric: true,
     digest: true,
   });
-  const profile = user ?? mockHomeOverview.user;
+  const profile = user ?? { name: "Student", email: "", avatar_initials: "S", plan: "Free" };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -48,7 +47,7 @@ export function SettingsScreen() {
         </View>
 
         <View style={styles.panel}>
-          <Text style={styles.sectionTitle}>Sanctuary Controls</Text>
+          <Text style={styles.sectionTitle}>Preferences</Text>
           {settingRows.map((row) => (
             <View key={row.key} style={styles.settingRow}>
               <View style={styles.settingMeta}>

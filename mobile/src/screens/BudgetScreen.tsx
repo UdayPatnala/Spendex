@@ -10,17 +10,18 @@ import {
 } from "react-native";
 
 import { spedexApi } from "../api/client";
-import { mockBudgetData } from "../api/mockData";
 import { accentPalette, formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
 import type { BudgetScreenData } from "../types";
 
 export function BudgetScreen() {
-  const [data, setData] = useState<BudgetScreenData>(mockBudgetData);
+  const [data, setData] = useState<BudgetScreenData | null>(null);
 
   useEffect(() => {
-    spedexApi.getBudgetScreen().then(setData).catch(() => setData(mockBudgetData));
+    spedexApi.getBudgetScreen().then(setData).catch(console.error);
   }, []);
+
+  if (!data) return <SafeAreaView style={styles.safeArea} />;
 
   return (
     <SafeAreaView style={styles.safeArea}>

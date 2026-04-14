@@ -10,17 +10,18 @@ import {
 } from "react-native";
 
 import { spedexApi } from "../api/client";
-import { mockHomeOverview } from "../api/mockData";
 import { formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
 import type { HomeOverview as HomeOverviewType, Vendor } from "../types";
 
 export function HomeScreen({ navigation }: any) {
-  const [data, setData] = useState<HomeOverviewType>(mockHomeOverview);
+  const [data, setData] = useState<HomeOverviewType | null>(null);
 
   useEffect(() => {
-    spedexApi.getHomeOverview().then(setData).catch(() => setData(mockHomeOverview));
+    spedexApi.getHomeOverview().then(setData).catch(console.error);
   }, []);
+
+  if (!data) return <SafeAreaView style={styles.safeArea} />;
 
   const spendRatio = Math.min(data.today_spend / data.today_budget, 1);
 

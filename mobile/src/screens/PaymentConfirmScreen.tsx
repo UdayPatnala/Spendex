@@ -12,7 +12,6 @@ import {
 } from "react-native";
 
 import { spedexApi } from "../api/client";
-import { mockHomeOverview } from "../api/mockData";
 import { formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
 import type { Vendor } from "../types";
@@ -24,7 +23,7 @@ const upiApps = [
 ];
 
 export function PaymentConfirmScreen({ navigation, route }: any) {
-  const vendor: Vendor = route.params?.vendor ?? mockHomeOverview.quick_pay[0];
+  const vendor: Vendor = route.params?.vendor;
   const [selectedApp, setSelectedApp] = useState(upiApps[0]);
   const [submitting, setSubmitting] = useState(false);
   const [pendingTxnId, setPendingTxnId] = useState<number | null>(null);

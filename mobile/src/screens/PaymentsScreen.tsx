@@ -11,19 +11,20 @@ import {
 } from "react-native";
 
 import { spedexApi } from "../api/client";
-import { mockVendorDirectory } from "../api/mockData";
 import { accentPalette, formatCurrency, iconFor } from "../theme/helpers";
 import { colors, radii, shadows, spacing } from "../theme/tokens";
 import type { Vendor, VendorDirectoryData } from "../types";
 
 export function PaymentsScreen({ navigation }: any) {
-  const [data, setData] = useState<VendorDirectoryData>(mockVendorDirectory);
+  const [data, setData] = useState<VendorDirectoryData | null>(null);
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
 
   useEffect(() => {
-    spedexApi.getVendorDirectory().then(setData).catch(() => setData(mockVendorDirectory));
+    spedexApi.getVendorDirectory().then(setData).catch(console.error);
   }, []);
+
+  if (!data) return <SafeAreaView style={styles.safeArea} />;
 
   const groups = useMemo<Record<string, Vendor[]>>(() => {
     const lowered = deferredQuery.trim().toLowerCase();

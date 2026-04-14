@@ -2,7 +2,6 @@ import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 
 import QRCode from "react-qr-code";
 
 import { getCurrentUser, loadDashboardBundle, login, setAuthToken, signUp } from "./api";
-import { mockAnalytics, mockBudget, mockOverview, mockVendors } from "./mockData";
 import type {
   AnalyticsData,
   BudgetScreenData,
@@ -721,10 +720,10 @@ function filterTransactions(transactions: Transaction[], query: string) {
 export default function App() {
   const [activeView, setActiveView] = useState<ViewId>("home");
   const [searchQuery, setSearchQuery] = useState("");
-  const [overview, setOverview] = useState(mockOverview);
-  const [vendors, setVendors] = useState(mockVendors);
-  const [budget, setBudget] = useState(mockBudget);
-  const [analytics, setAnalytics] = useState(mockAnalytics);
+  const [overview, setOverview] = useState<DashboardOverview | null>(null);
+  const [vendors, setVendors] = useState<VendorDirectoryData | null>(null);
+  const [budget, setBudget] = useState<BudgetScreenData | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
   const [sessionUser, setSessionUser] = useState<DashboardOverview["user"] | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
@@ -800,10 +799,10 @@ export default function App() {
         if (!mounted) {
           return;
         }
-        setOverview(mockOverview);
-        setVendors(mockVendors);
-        setBudget(mockBudget);
-        setAnalytics(mockAnalytics);
+        setOverview(null);
+        setVendors(null);
+        setBudget(null);
+        setAnalytics(null);
       });
 
     return () => {
@@ -812,8 +811,8 @@ export default function App() {
   }, [sessionUser]);
 
   const filteredTransactions = useMemo(
-    () => filterTransactions(overview.recent_transactions, deferredSearch),
-    [overview.recent_transactions, deferredSearch],
+    () => filterTransactions(overview?.recent_transactions ?? [], deferredSearch),
+    [overview?.recent_transactions, deferredSearch],
   );
 
   async function handleAuthSubmit() {
@@ -873,6 +872,18 @@ export default function App() {
         submitting={authSubmitting}
         error={authError}
       />
+    );
+  }
+
+  if (!overview || !vendors || !budget || !analytics) {
+    return (
+      <main className="auth-shell">
+        <section className="auth-card" style={{ textAlign: "center" }}>
+          <BrandLockup />
+          <p className="eyebrow">Loading</p>
+          <h2 className="page-title">Preparing your campus workspace…</h2>
+        </section>
+      </main>
     );
   }
 
