@@ -73,9 +73,9 @@ export function AnalyticsScreen() {
           </View>
           <Text style={styles.sectionSubtitle}>Transaction volume across the last 4 weeks</Text>
           <View style={styles.chart}>
-            {data.weekly_spend.map((week) => {
+            {(() => {
               const maxAmount = Math.max(...data.weekly_spend.map((point) => point.amount), 1);
-              return (
+              return data.weekly_spend.map((week) => (
                 <View key={week.week_label} style={styles.barWrap}>
                   <View
                     style={[
@@ -88,8 +88,8 @@ export function AnalyticsScreen() {
                   />
                   <Text style={styles.barLabel}>{week.week_label}</Text>
                 </View>
-              );
-            })}
+              ));
+            })()}
           </View>
         </View>
 
