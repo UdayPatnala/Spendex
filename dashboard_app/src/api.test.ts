@@ -1,71 +1,120 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { getCurrentUser, setAuthToken } from './api';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-describe('API request function', () => {
-  let originalFetch: typeof global.fetch;
+import { getCurrentUser, login, setAuthToken } from "./api";
+
+describe("api", () => {
+  let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
-    originalFetch = global.fetch;
-    global.fetch = vi.fn().mockResolvedValue({
+    originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ id: 1, name: 'Test User' })
-    });
+      json: async () => ({ id: 1, name: "Test User" }),
+    }) as typeof globalThis.fetch;
     setAuthToken(null);
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
+    setAuthToken(null);
     vi.restoreAllMocks();
   });
 
-  it('should ignore localStorage exceptions and proceed without token', async () => {
-    // Mock window to have localStorage that throws an error
-    const originalLocalStorage = window.localStorage;
-    Object.defineProperty(window, 'localStorage', {
-      value: {
-        getItem: vi.fn().mockImplementation(() => {
-          throw new Error('localStorage is disabled or restricted');
-        })
-      },
-      writable: true
+  describe("login", () => {
+    it("should call fetch with the correct arguments", async () => {
+      const mockResponse = { access_token: "test_token", token_type: "bearer" };
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse,
+      } as Response);
+
+      const result = await login({ email: "test@example.com", password: "password123" });
+
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/auth/login"),
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+          }),
+          body: JSON.stringify({ email: "test@example.com", password: "password123" }),
+        }),
+      );
+      expect(result).toEqual(mockResponse);
     });
 
-    try {
-      const user = await getCurrentUser();
-      expect(user).toEqual({ id: 1, name: 'Test User' });
-      expect(global.fetch).toHaveBeenCalledOnce();
+    it("should throw an error if the response is not ok", async () => {
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({ detail: "Unauthorized" }),
+      } as Response);
 
-      const fetchArgs = (global.fetch as any).mock.calls[0];
-      expect(fetchArgs[1].headers).not.toHaveProperty('Authorization');
-    } finally {
-      Object.defineProperty(window, 'localStorage', {
-        value: originalLocalStorage,
-        writable: true
-      });
-    }
+      await expect(login({ email: "test@example.com", password: "wrong" })).rejects.toThrow("Unauthorized");
+    });
+
+    it("should throw a default error if response is not ok and no detail is provided", async () => {
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => ({}),
+      } as Response);
+
+      await expect(login({ email: "test@example.com", password: "wrong" })).rejects.toThrow("Request failed with 500");
+    });
   });
 
-  it('should ignore JSON.parse exceptions and proceed without token', async () => {
-    const originalLocalStorage = window.localStorage;
-    Object.defineProperty(window, 'localStorage', {
-      value: {
-        getItem: vi.fn().mockReturnValue('invalid json')
-      },
-      writable: true
+  describe("request auth fallback", () => {
+    it("should ignore localStorage exceptions and proceed without token", async () => {
+      const originalLocalStorage = window.localStorage;
+      Object.defineProperty(window, "localStorage", {
+        value: {
+          getItem: vi.fn().mockImplementation(() => {
+            throw new Error("localStorage is disabled or restricted");
+          }),
+        },
+        writable: true,
+      });
+
+      try {
+        const user = await getCurrentUser();
+
+        expect(user).toEqual({ id: 1, name: "Test User" });
+        expect(globalThis.fetch).toHaveBeenCalledOnce();
+
+        const fetchArgs = vi.mocked(globalThis.fetch).mock.calls[0];
+        expect(fetchArgs[1]?.headers).not.toHaveProperty("Authorization");
+      } finally {
+        Object.defineProperty(window, "localStorage", {
+          value: originalLocalStorage,
+          writable: true,
+        });
+      }
     });
 
-    try {
-      const user = await getCurrentUser();
-      expect(user).toEqual({ id: 1, name: 'Test User' });
-      expect(global.fetch).toHaveBeenCalledOnce();
-
-      const fetchArgs = (global.fetch as any).mock.calls[0];
-      expect(fetchArgs[1].headers).not.toHaveProperty('Authorization');
-    } finally {
-      Object.defineProperty(window, 'localStorage', {
-        value: originalLocalStorage,
-        writable: true
+    it("should ignore JSON.parse exceptions and proceed without token", async () => {
+      const originalLocalStorage = window.localStorage;
+      Object.defineProperty(window, "localStorage", {
+        value: {
+          getItem: vi.fn().mockReturnValue("invalid json"),
+        },
+        writable: true,
       });
-    }
+
+      try {
+        const user = await getCurrentUser();
+
+        expect(user).toEqual({ id: 1, name: "Test User" });
+        expect(globalThis.fetch).toHaveBeenCalledOnce();
+
+        const fetchArgs = vi.mocked(globalThis.fetch).mock.calls[0];
+        expect(fetchArgs[1]?.headers).not.toHaveProperty("Authorization");
+      } finally {
+        Object.defineProperty(window, "localStorage", {
+          value: originalLocalStorage,
+          writable: true,
+        });
+      }
+    });
   });
 });
