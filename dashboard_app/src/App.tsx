@@ -820,8 +820,7 @@ function filterTransactions(transactions: Transaction[], query: string) {
     return transactions;
   }
   return transactions.filter((transaction) =>
-    [transaction.description, transaction.category, transaction.account_label]
-      .join(" ")
+    `${transaction.description || ""} ${transaction.category || ""} ${transaction.account_label || ""}`
       .toLowerCase()
       .includes(lowered),
   );
