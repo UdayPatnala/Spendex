@@ -958,13 +958,13 @@ export default function App() {
     return (
       <AuthView
         mode={authMode}
-        onModeChange={(mode) => startTransition(() => setAuthMode(mode))}
+        onModeChange={(mode) => setAuthMode(mode)}
         name={authName}
         email={authEmail}
         password={authPassword}
-        onNameChange={(value) => startTransition(() => setAuthName(value))}
-        onEmailChange={(value) => startTransition(() => setAuthEmail(value))}
-        onPasswordChange={(value) => startTransition(() => setAuthPassword(value))}
+        onNameChange={(value) => setAuthName(value)}
+        onEmailChange={(value) => setAuthEmail(value)}
+        onPasswordChange={(value) => setAuthPassword(value)}
         onSubmit={handleAuthSubmit}
         submitting={authSubmitting}
         error={authError}
