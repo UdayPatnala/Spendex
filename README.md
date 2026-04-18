@@ -4,66 +4,56 @@ Spedex is a fintech workspace for tracking how fast money moves and where it goe
 
 ## Project Structure
 
-- `backend/`: FastAPI API with SQLite-by-default and PostgreSQL-ready configuration
-- `mobile/`: Expo React Native app for the mobile Spedex experience
-- `dashboard_app/`: React dashboard for desktop spending operations
-- `api/`: Vercel entrypoint that routes web traffic to the backend service
+- `backend/`: Java Spring Boot backend API with in-memory H2 database by default and PostgreSQL-ready configuration.
+- `mobile/`: Expo React Native app for the mobile Spedex experience.
+- `dashboard_app/`: React Vite dashboard for desktop spending operations.
 
 ## Quick Start
 
 ### 1. Backend
 
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-cp .env.example .env             # then edit .env with your values
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+The backend is a Java Spring Boot application built with Maven.
 
-The API defaults to SQLite at `backend/spedex.db`. Set `DATABASE_URL` to a PostgreSQL connection string (e.g. Neon, Supabase) to switch databases.
+`cd backend`
 
-Set `SPEDEX_SEED_DEMO=true` in your `.env` to seed a demo account on first startup.
+`chmod +x mvnw`
 
-Demo credentials (when seeded):
+`./mvnw spring-boot:run`
+
+The API defaults to an H2 database. Configure your application properties to set `spring.datasource.url` to a PostgreSQL connection string to switch databases.
+
+Demo credentials:
 
 - Email: `alex@spedex.app`
 - Password: `spedex123`
 
 ### 2. Mobile
 
-```bash
-cd mobile
-npm install
-npm start
-```
+`cd mobile`
 
-By default the app points at `http://localhost:8000`. For Android emulators it automatically uses `http://10.0.2.2:8000`.
+`npm install`
+
+`npm run start`
+
+By default the app points at `http://localhost:8080`. For Android emulators it automatically uses `http://10.0.2.2:8080`.
 
 ### 3. Dashboard
 
-```bash
-cd dashboard_app
-npm install
-npm run dev
-```
+`cd dashboard_app`
 
-## Deploying to Vercel
+`npm install`
 
-```bash
-npm i -g vercel
-vercel
-```
+`npm run dev`
 
-Set these environment variables in the Vercel dashboard:
+## Environment Setup
 
-| Variable | Description |
+Set these environment variables or application properties as appropriate:
+
+| Variable / Property | Description |
 |---|---|
-| `SPEDEX_SECRET_KEY` | Strong random string — `openssl rand -hex 32` |
-| `DATABASE_URL` | PostgreSQL connection string (e.g. Neon) |
-| `SPEDEX_CORS_ORIGINS` | Your deployed frontend URL |
-| `SPEDEX_SEED_DEMO` | `true` for staging, leave unset for production |
+| `JWT_SECRET` | Strong random string (at least 256 bits) used for token generation |
+| `spring.datasource.url` | PostgreSQL connection string |
+| `spedex.cors.allowed-origins` | Your deployed frontend URLs |
 
 ## API Highlights
 
@@ -74,8 +64,6 @@ Set these environment variables in the Vercel dashboard:
 - `GET /api/mobile/vendors`
 - `GET /api/mobile/analytics`
 - `GET /api/dashboard/overview`
-- `POST /api/payments/prepare`
-- `POST /api/payments/{transaction_id}/complete`
 
 ## Branding Notes
 
