@@ -71,6 +71,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const message =
       payload?.detail ??
       payload?.message ??
+      (payload ? Object.values(payload)[0] : null) ??
       (response.status === 401
         ? "Incorrect email or password."
         : response.status === 404
