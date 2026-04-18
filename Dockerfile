@@ -1,6 +1,7 @@
 # Build stage
 FROM maven:3.9.6-eclipse-temurin-17 AS build
-COPY . /app
+# Copy only the backend folder content to /app
+COPY backend /app
 WORKDIR /app
 RUN mvn clean package -DskipTests
 
