@@ -751,3 +751,74 @@ input::placeholder {
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 .qr-modal-card { background: var(--surface-strong); padding: 32px; border-radius: 24px; min-width: 340px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid var(--surface-highest); box-shadow: var(--shadow); }
+
+/* Profile Editing Styles */
+.profile-edit-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 24px 0;
+}
+
+.profile-avatar-large {
+  width: 140px;
+  height: 140px;
+  border-radius: 40px;
+  background: var(--surface-low);
+  display: flex;
+  align-items: center;
+  justifyContent: center;
+  overflow: hidden;
+  border: 4px solid var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+
+.profile-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-large span {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-meta-static {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-meta-static strong {
+  font-size: 2.2rem;
+  font-family: "Cormorant Garamond", serif;
+  line-height: 1;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-field label {
+  margin-left: 4px;
+}
+
+@media (max-width: 768px) {
+  .profile-edit-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 32px;
+  }
+}

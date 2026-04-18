@@ -98,6 +98,13 @@ export function addVendor(payload: VendorCreate) {
   });
 }
 
+export function updateProfile(payload: { name?: string; profile_picture_url?: string }) {
+  return request<SpedexUser>("/auth/profile", {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
 /** Ping the backend to wake it up from Render cold start */
 export async function warmUpBackend(): Promise<boolean> {
   try {

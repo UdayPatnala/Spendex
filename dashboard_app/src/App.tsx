@@ -1,7 +1,7 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useState } from "react";
 import QRCode from "react-qr-code";
 
-import { addVendor, getCurrentUser, loadDashboardBundle, login, setAuthToken, signUp, warmUpBackend } from "./api";
+import { addVendor, getCurrentUser, loadDashboardBundle, login, setAuthToken, signUp, updateProfile, warmUpBackend } from "./api";
 import type {
   AnalyticsData,
   BudgetScreenData,
@@ -727,7 +727,25 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
   );
 }
 
-function SettingsView({ overview }: { overview: DashboardOverview }) {
+function SettingsView({ overview, onRefresh }: { overview: DashboardOverview; onRefresh: () => Promise<void> }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(overview.user.name);
+  const [editPic, setEditPic] = useState(overview.user.profile_picture_url || "");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await updateProfile({ name: editName, profile_picture_url: editPic });
+      await onRefresh();
+      setIsEditing(false);
+    } catch (e) {
+      alert("Failed to update profile.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div className="settings-shell">
       <section className="card">
@@ -736,15 +754,44 @@ function SettingsView({ overview }: { overview: DashboardOverview }) {
             <p className="eyebrow">Identity</p>
             <h2 className="page-title section-title">Profile</h2>
           </div>
-          <div className="profile-chip">
-            <div className="profile-meta">
-              <strong>{overview.user.name}</strong>
-              <small>{overview.user.plan}</small>
-            </div>
-            <div className="profile-avatar">{overview.user.avatar_initials}</div>
+          <button className="status-chip" onClick={() => (isEditing ? handleSave() : setIsEditing(true))} disabled={saving}>
+            {saving ? "Saving..." : isEditing ? "Save Changes" : "Edit Profile"}
+          </button>
+        </div>
+
+        <div className="profile-edit-grid">
+          <div className="profile-avatar-large">
+            {overview.user.profile_picture_url ? (
+              <img src={overview.user.profile_picture_url} alt={overview.user.name} />
+            ) : (
+              <span>{overview.user.avatar_initials}</span>
+            )}
+          </div>
+          <div className="profile-form">
+            {isEditing ? (
+              <>
+                <div className="auth-form" style={{ gap: 12 }}>
+                  <div className="input-field">
+                    <label className="eyebrow">Display Name</label>
+                    <input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Full name" />
+                  </div>
+                  <div className="input-field">
+                    <label className="eyebrow">Profile Picture URL</label>
+                    <input value={editPic} onChange={(e) => setEditPic(e.target.value)} placeholder="https://..." />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="profile-meta-static">
+                <strong>{overview.user.name}</strong>
+                <p className="subtle">{overview.user.email}</p>
+                <span className="status-chip soft">{overview.user.plan}</span>
+              </div>
+            )}
           </div>
         </div>
-        <div className="settings-list">
+
+        <div className="settings-list" style={{ marginTop: 32, borderTop: "1px solid var(--border-color)", paddingTop: 24 }}>
           {[
             ["Payment alerts", "Get a nudge for every large transfer or AutoPay reminder."],
             ["Device lock", "Use biometrics before sensitive UPI or bank actions."],
@@ -914,6 +961,14 @@ export default function App() {
     }
   }
 
+  async function handleRefresh() {
+    const bundle = await loadDashboardBundle();
+    setOverview(bundle.overview);
+    setVendors(bundle.vendors);
+    setBudget(bundle.budget);
+    setAnalytics(bundle.analytics);
+  }
+
   function handleSignOut() {
     setAuthToken(null);
     window.localStorage.removeItem(STORAGE_KEY);
@@ -992,7 +1047,7 @@ export default function App() {
   } else if (activeView === "budget") {
     content = <BudgetView budget={budget} />;
   } else if (activeView === "settings") {
-    content = <SettingsView overview={overview} />;
+    content = <SettingsView overview={overview} onRefresh={handleRefresh} />;
   }
 
   return (
