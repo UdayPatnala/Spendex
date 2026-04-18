@@ -64,24 +64,38 @@ export function PaymentsScreen({ navigation }: any) {
 
   if (!data) return <SafeAreaView style={styles.safeArea} />;
 
+  const searchableGroups = useMemo(() => {
+    return Object.entries(data.groups).map(([groupName, vendors]) => {
+      return {
+        groupName,
+        vendors: vendors.map((vendor) => ({
+          vendor,
+          searchName: vendor.name.toLowerCase(),
+          searchCategory: vendor.category.toLowerCase(),
+        })),
+      };
+    });
+  }, [data.groups]);
+
   const groups = useMemo<Record<string, Vendor[]>>(() => {
     const lowered = deferredQuery.trim().toLowerCase();
     if (!lowered) {
       return data.groups;
     }
     return Object.fromEntries(
-      Object.entries(data.groups)
-        .map(([groupName, vendors]) => [
+      searchableGroups
+        .map(({ groupName, vendors }) => [
           groupName,
-          vendors.filter(
-            (vendor) =>
-              vendor.name.toLowerCase().includes(lowered) ||
-              vendor.category.toLowerCase().includes(lowered),
-          ),
+          vendors
+            .filter(
+              ({ searchName, searchCategory }) =>
+                searchName.includes(lowered) || searchCategory.includes(lowered),
+            )
+            .map(({ vendor }) => vendor),
         ])
         .filter(([, vendors]) => vendors.length > 0),
     ) as Record<string, Vendor[]>;
-  }, [data.groups, deferredQuery]);
+  }, [searchableGroups, data.groups, deferredQuery]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
