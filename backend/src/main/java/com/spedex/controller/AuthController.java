@@ -5,6 +5,7 @@ import com.spedex.dto.LoginRequestDto;
 import com.spedex.dto.SignUpRequestDto;
 import com.spedex.dto.SpedexUserDto;
 import com.spedex.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponseDto> signup(@RequestBody SignUpRequestDto request) {
+    public ResponseEntity<AuthResponseDto> signup(@Valid @RequestBody SignUpRequestDto request) {
         return ResponseEntity.ok(userService.signup(request));
     }
 
