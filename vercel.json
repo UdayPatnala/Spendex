@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "experimentalServices": {
+    "dashboard": {
+      "entrypoint": "dashboard_app",
+      "routePrefix": "/"
+    }
+  }
+}
