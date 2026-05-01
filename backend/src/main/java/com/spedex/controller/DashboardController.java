@@ -21,6 +21,12 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getOverview(email));
     }
 
+    @GetMapping("/mobile/home")
+    public ResponseEntity<Map<String, Object>> mobileHome() {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok(dashboardService.getMobileHome(email));
+    }
+
     @GetMapping("/mobile/vendors")
     public ResponseEntity<Map<String, Object>> vendors() {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

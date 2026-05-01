@@ -25,16 +25,16 @@ const navItems: Array<{ id: ViewId; label: string; icon: string }> = [
 ];
 
 const categoryMeta: Record<string, { emoji: string; icon: string }> = {
-  Dining: { emoji: "🍴", icon: "restaurant" },
-  Groceries: { emoji: "🛒", icon: "shopping_basket" },
-  Miscellaneous: { emoji: "✨", icon: "payments" },
-  Transport: { emoji: "🚇", icon: "directions_bus" },
-  Bills: { emoji: "💡", icon: "bolt" },
-  Shopping: { emoji: "🛍️", icon: "shopping_bag" },
-  Health: { emoji: "💊", icon: "fitness_center" },
-  Rent: { emoji: "🏠", icon: "home_work" },
-  Subscriptions: { emoji: "📲", icon: "cloud" },
-  Income: { emoji: "💰", icon: "payments" },
+  Dining: { emoji: "\u{1F374}", icon: "restaurant" },
+  Groceries: { emoji: "\u{1F6D2}", icon: "shopping_basket" },
+  Miscellaneous: { emoji: "\u{2728}", icon: "payments" },
+  Transport: { emoji: "\u{1F687}", icon: "directions_bus" },
+  Bills: { emoji: "\u{1F4A1}", icon: "bolt" },
+  Shopping: { emoji: "\u{1F6CD}\u{FE0F}", icon: "shopping_bag" },
+  Health: { emoji: "\u{1F48A}", icon: "fitness_center" },
+  Rent: { emoji: "\u{1F3E0}", icon: "home_work" },
+  Subscriptions: { emoji: "\u{1F4F2}", icon: "cloud" },
+  Income: { emoji: "\u{1F4B0}", icon: "payments" },
 };
 
 function formatCurrency(amount: number) {
@@ -67,7 +67,7 @@ function monthYear(isoDate: string) {
 }
 
 function categoryEmoji(category: string) {
-  return categoryMeta[category]?.emoji ?? "✨";
+  return categoryMeta[category]?.emoji ?? "\u{2728}";
 }
 
 function categoryLabel(category: string) {
@@ -481,7 +481,7 @@ function HomeView({
             {overview.reminders.map((reminder) => (
               <div key={reminder.id} className="reminder-row">
                 <div className="icon-badge accent-lavender">
-                  <span className="emoji-glyph">📅</span>
+                  <span className="emoji-glyph">{"\u{1F4C5}"}</span>
                 </div>
                 <div>
                   <p className="reminder-title">{reminder.title}</p>
@@ -704,7 +704,7 @@ function BudgetView({ budget }: { budget: BudgetScreenData }) {
           {budget.reminders.map((reminder) => (
             <div key={reminder.id} className="reminder-row">
               <div className="icon-badge accent-lavender">
-                <span className="emoji-glyph">⏰</span>
+                <span className="emoji-glyph">{"\u{23F0}"}</span>
               </div>
               <div>
                 <p className="reminder-title">{reminder.title}</p>
