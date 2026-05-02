@@ -2,6 +2,7 @@
   "expo": {
     "name": "Spedex",
     "slug": "spedex",
+    "owner": "udaypatnala",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -15,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.udayp.spedex",
       "adaptiveIcon": {
         "backgroundColor": "#24389c"
       }
